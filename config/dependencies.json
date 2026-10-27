@@ -1,0 +1,23 @@
+[
+  {
+    "name": "RotorS",
+    "local_source": "/home/ljz/rotors_ws/src/rotors_simulator",
+    "commit": "cd813b7a8c375d677352aa20ad20047feb661126",
+    "remote": "https://github.com/ethz-asl/rotors_simulator.git",
+    "working_tree_status": ""
+  },
+  {
+    "name": "mav_comm",
+    "local_source": "/home/ljz/rotors_ws/src/mav_comm",
+    "commit": "56122218eb1ec34deaa641598ebacf24e26c349b",
+    "remote": "https://github.com/ethz-asl/mav_comm.git",
+    "working_tree_status": ""
+  },
+  {
+    "name": "Open3D",
+    "local_source": "/home/ljz/falcon_deps/Open3D",
+    "commit": "0f06a149c4fb9406fd3e432a5cb0c024f38e2f0e",
+    "remote": "https://github.com/isl-org/Open3D.git",
+    "working_tree_status": ""
+  }
+]

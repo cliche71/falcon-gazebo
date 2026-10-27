@@ -1,0 +1,25 @@
+<launch>
+  <arg name="gui" default="false"/>
+  <arg name="depth_mode" default="legacy"/>
+  <arg name="observe_raw" default="false"/>
+  <param name="/native/camera_depth_mode" value="$(arg depth_mode)" type="str"/>
+  <env name="GAZEBO_MODEL_PATH" value="$(find falcon_native)/models:$(find rotors_gazebo)/models:$(optenv GAZEBO_MODEL_PATH)"/>
+  <env name="GAZEBO_RESOURCE_PATH" value="$(find rotors_gazebo)/models:$(optenv GAZEBO_RESOURCE_PATH)"/>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find falcon_native)/worlds/office_rotors.world"/>
+    <arg name="paused" value="true"/><arg name="gui" value="$(arg gui)"/><arg name="use_sim_time" value="true"/>
+  </include>
+  <group ns="hummingbird">
+    <param name="robot_description" command="/usr/bin/python3 $(find falcon_native)/scripts/camera_model.py --mode $(arg depth_mode) --observe-raw $(arg observe_raw)"/>
+    <param name="tf_prefix" value="" type="str"/>
+    <node name="spawn_hummingbird" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x 0 -y 0 -z 0.1 -model hummingbird" output="screen"/>
+    <node name="lee_position_controller_node" pkg="rotors_control" type="lee_position_controller_node" output="screen" required="true">
+      <rosparam command="load" file="$(find rotors_gazebo)/resource/lee_controller_hummingbird.yaml"/>
+      <rosparam command="load" file="$(find rotors_gazebo)/resource/hummingbird.yaml"/>
+      <rosparam command="load" file="$(find falcon_native)/config/hummingbird_vi_control.yaml"/>
+      <remap from="odometry" to="odometry_sensor1/odometry"/>
+    </node>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+  </group>
+</launch>

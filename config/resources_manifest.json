@@ -1,0 +1,102 @@
+[
+  {
+    "relative_to_FALCON": "figure/TRO_video_complex_office.gif",
+    "bytes": 1312630,
+    "sha256": "ad7c2c81aae6635855518647e060ca43ba696bc523e764bf6de95369e39eba9a",
+    "local_mapping": "/home/ljz/falcon_gazebo_repair_ws/src/FALCON/figure/TRO_video_complex_office.gif",
+    "fixed_upstream_commit": "312eb4d32c6c7af1a482f94a0a204aa2bb150cca",
+    "url": "https://raw.githubusercontent.com/HKUST-Aerial-Robotics/FALCON/312eb4d32c6c7af1a482f94a0a204aa2bb150cca/figure/TRO_video_complex_office.gif",
+    "required_for_native_office": false,
+    "archive_manifest": "main_before"
+  },
+  {
+    "relative_to_FALCON": "figure/TRO_video_octa_maze.gif",
+    "bytes": 1651062,
+    "sha256": "fb1253280697ebbe868f93f8dcb6915df14602249861d6109d8bc095b4c976db",
+    "local_mapping": "/home/ljz/falcon_gazebo_repair_ws/src/FALCON/figure/TRO_video_octa_maze.gif",
+    "fixed_upstream_commit": "312eb4d32c6c7af1a482f94a0a204aa2bb150cca",
+    "url": "https://raw.githubusercontent.com/HKUST-Aerial-Robotics/FALCON/312eb4d32c6c7af1a482f94a0a204aa2bb150cca/figure/TRO_video_octa_maze.gif",
+    "required_for_native_office": false,
+    "archive_manifest": "main_before"
+  },
+  {
+    "relative_to_FALCON": "figure/TRO_video_power_plant.gif",
+    "bytes": 13626375,
+    "sha256": "894be23ebd4dde5fd3690c33d2a2a64d3f451acb86adf25b406b62383cb094ab",
+    "local_mapping": "/home/ljz/falcon_gazebo_repair_ws/src/FALCON/figure/TRO_video_power_plant.gif",
+    "fixed_upstream_commit": "312eb4d32c6c7af1a482f94a0a204aa2bb150cca",
+    "url": "https://raw.githubusercontent.com/HKUST-Aerial-Robotics/FALCON/312eb4d32c6c7af1a482f94a0a204aa2bb150cca/figure/TRO_video_power_plant.gif",
+    "required_for_native_office": false,
+    "archive_manifest": "main_before"
+  },
+  {
+    "relative_to_FALCON": "figure/TRO_video_real_world.gif",
+    "bytes": 9828155,
+    "sha256": "447874f7b7d71cac0df57b80ed8e687fd643f05b00ba0f29131d2f17279b9793",
+    "local_mapping": "/home/ljz/falcon_gazebo_repair_ws/src/FALCON/figure/TRO_video_real_world.gif",
+    "fixed_upstream_commit": "312eb4d32c6c7af1a482f94a0a204aa2bb150cca",
+    "url": "https://raw.githubusercontent.com/HKUST-Aerial-Robotics/FALCON/312eb4d32c6c7af1a482f94a0a204aa2bb150cca/figure/TRO_video_real_world.gif",
+    "required_for_native_office": false,
+    "archive_manifest": "main_before"
+  },
+  {
+    "relative_to_FALCON": "uav_simulator/utils/pose_utils/lib/libpose_utils.so",
+    "bytes": 910717,
+    "sha256": "3181b26db02a3406f6be9f1df27c07117bbddc997bd8dcf8f71e5949d7624c30",
+    "local_mapping": "/home/ljz/falcon_gazebo_repair_ws/src/FALCON/uav_simulator/utils/pose_utils/lib/libpose_utils.so",
+    "fixed_upstream_commit": "312eb4d32c6c7af1a482f94a0a204aa2bb150cca",
+    "url": "https://raw.githubusercontent.com/HKUST-Aerial-Robotics/FALCON/312eb4d32c6c7af1a482f94a0a204aa2bb150cca/uav_simulator/utils/pose_utils/lib/libpose_utils.so",
+    "required_for_native_office": false,
+    "archive_manifest": "main_before"
+  },
+  {
+    "relative_to_FALCON": "uav_simulator/utils/multi_map_server/quadrotor_msgs/lib/libencode_msgs.so",
+    "bytes": 124451,
+    "sha256": "ebc4e8fe39488ecd16fb030632ae3b46bf9e0300f767f3a66148b5e4bfea3a27",
+    "local_mapping": "/home/ljz/falcon_gazebo_repair_ws/src/FALCON/uav_simulator/utils/multi_map_server/quadrotor_msgs/lib/libencode_msgs.so",
+    "fixed_upstream_commit": "312eb4d32c6c7af1a482f94a0a204aa2bb150cca",
+    "url": "https://raw.githubusercontent.com/HKUST-Aerial-Robotics/FALCON/312eb4d32c6c7af1a482f94a0a204aa2bb150cca/uav_simulator/utils/multi_map_server/quadrotor_msgs/lib/libencode_msgs.so",
+    "required_for_native_office": false,
+    "archive_manifest": "main_before"
+  },
+  {
+    "relative_to_FALCON": "uav_simulator/utils/multi_map_server/quadrotor_msgs/lib/libdecode_msgs.so",
+    "bytes": 493084,
+    "sha256": "cb85185b744f1d12d89e23a1d67528e79180e317a775c7ff858d9e1afc42002e",
+    "local_mapping": "/home/ljz/falcon_gazebo_repair_ws/src/FALCON/uav_simulator/utils/multi_map_server/quadrotor_msgs/lib/libdecode_msgs.so",
+    "fixed_upstream_commit": "312eb4d32c6c7af1a482f94a0a204aa2bb150cca",
+    "url": "https://raw.githubusercontent.com/HKUST-Aerial-Robotics/FALCON/312eb4d32c6c7af1a482f94a0a204aa2bb150cca/uav_simulator/utils/multi_map_server/quadrotor_msgs/lib/libdecode_msgs.so",
+    "required_for_native_office": false,
+    "archive_manifest": "main_before"
+  },
+  {
+    "relative_to_FALCON": "uav_simulator/map_render/resource/darpa_tunnel.pcd",
+    "bytes": 3569815,
+    "sha256": "45965df9a491b3de316661d4f7ecb73bb94874283351945b2b64453ce0f00c94",
+    "local_mapping": "/home/ljz/falcon_gazebo_repair_ws/src/FALCON/uav_simulator/map_render/resource/darpa_tunnel.pcd",
+    "fixed_upstream_commit": "312eb4d32c6c7af1a482f94a0a204aa2bb150cca",
+    "url": "https://raw.githubusercontent.com/HKUST-Aerial-Robotics/FALCON/312eb4d32c6c7af1a482f94a0a204aa2bb150cca/uav_simulator/map_render/resource/darpa_tunnel.pcd",
+    "required_for_native_office": false,
+    "archive_manifest": "main_before"
+  },
+  {
+    "relative_to_FALCON": "uav_simulator/map_render/resource/classical_office.pcd",
+    "bytes": 32990647,
+    "sha256": "1195e477823863c1eec8ce14a31fd901d1d2eab94cda4e7922b16aa123fc8167",
+    "local_mapping": "/home/ljz/falcon_gazebo_repair_ws/src/FALCON/uav_simulator/map_render/resource/classical_office.pcd",
+    "fixed_upstream_commit": "312eb4d32c6c7af1a482f94a0a204aa2bb150cca",
+    "url": "https://raw.githubusercontent.com/HKUST-Aerial-Robotics/FALCON/312eb4d32c6c7af1a482f94a0a204aa2bb150cca/uav_simulator/map_render/resource/classical_office.pcd",
+    "required_for_native_office": false,
+    "archive_manifest": "main_before"
+  },
+  {
+    "relative_to_FALCON": "uav_simulator/map_render/resource/power_plant.pcd",
+    "bytes": 67432171,
+    "sha256": "0bbcbd886bbcf0eb2bf4328e571622018034add04885e456f000e56fcbc1df3e",
+    "local_mapping": "/home/ljz/falcon_gazebo_repair_ws/src/FALCON/uav_simulator/map_render/resource/power_plant.pcd",
+    "fixed_upstream_commit": "312eb4d32c6c7af1a482f94a0a204aa2bb150cca",
+    "url": "https://raw.githubusercontent.com/HKUST-Aerial-Robotics/FALCON/312eb4d32c6c7af1a482f94a0a204aa2bb150cca/uav_simulator/map_render/resource/power_plant.pcd",
+    "required_for_native_office": false,
+    "archive_manifest": "main_before"
+  }
+]

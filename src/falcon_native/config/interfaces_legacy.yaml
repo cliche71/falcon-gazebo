@@ -1,0 +1,35 @@
+# Only scene, measured sensor, explicit trigger and initialization interfaces.
+map_config:
+  init_x: 0.0
+  init_y: 0.0
+  init_z: 1.0
+  init_yaw: 0.0
+  map_size:
+    map_min_x: -10.0
+    map_min_y: -17.0
+    map_min_z: -1.0
+    map_max_x: 10.0
+    map_max_y: 17.0
+    map_max_z: 3.0
+    box_min_x: -8.1
+    box_min_y: -15.3
+    box_min_z: 0.0
+    box_max_x: 7.9
+    box_max_y: 15.4
+    box_max_z: 2.0
+    vbox_min_x: -8.5
+    vbox_min_y: -15.7
+    vbox_min_z: -0.2
+    vbox_max_x: 8.3
+    vbox_max_y: 15.8
+    vbox_max_z: 2.5
+uav_model:
+  sensing_parameters:
+    min_depth: 0.35
+transformer:
+  pose_topic_type: pose
+  sensor_frame: hummingbird/fuel_official_camera_optical_link
+exploration_manager:
+  auto_start: false
+traj_server:
+  external_initialization: true

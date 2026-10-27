@@ -1,0 +1,7 @@
+# 固定依赖与可复现来源
+
+config/dependencies.json记录本机实际RotorS、mav_comm、Open3D上游URL、commit和差异状态。ROS Noetic/Gazebo/PCL/Eigen/NLopt由系统包提供；原始系统包版本和构建配置保存在归档原报告。falcon_deps与rotors_ws保留，未清理其源码。Open3D主要用于历史/可选数据工具，并非本次Gazebo规划器新加入依赖。
+
+复建基础依赖：在新的工作区src中按JSON URL clone并checkout固定commit；RotorS需要mav_comm及Gazebo/ROS开发包，然后source /opt/ros/noetic/setup.bash并catkin_make。不要把已有主线或支撑devel在运行中替换。主线只构建tools/build.sh中的原白名单；可选RViz/PCD资源由固定commit URL及SHA获取，本地可靠归档也能恢复。
+
+原生办公室world、model和相机插件源码均跟踪在src/falcon_native，reference/scene_manifest.json保留场景来源与哈希。没有隐去唯一场景资源；不入Git的大PCD/GIF/源树预编译库有config/resources_manifest.json映射，可使用tools/fetch_optional_resources.py校验获取；它们不是当前原生办公室运行必需。

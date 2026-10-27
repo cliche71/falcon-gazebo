@@ -1,0 +1,2 @@
+/voxel_mapping/occupancy_grid/sdf_cutoff_distance_scale: 0.5
+/bspline_opt/safe_distance: 0.7

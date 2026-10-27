@@ -1,0 +1,26 @@
+<launch>
+  <arg name="log_dir"/>
+  <arg name="depth_mode" default="legacy"/>
+  <arg name="interface_config" default="$(eval 'interfaces_legacy.yaml' if arg('depth_mode') == 'legacy' else 'interfaces.yaml')"/>
+  <rosparam command="load" file="$(find exploration_manager)/config/robot/uav_model_simulator.yaml"/>
+  <rosparam command="load" file="$(find exploration_manager)/config/map/classical_office.yaml"/>
+  <rosparam command="load" file="$(find voxel_mapping)/config/voxel_mapping.yaml"/>
+  <rosparam command="load" file="$(find pathfinding)/config/astar.yaml"/>
+  <rosparam command="load" file="$(find fast_planner)/config/fast_planner.yaml"/>
+  <rosparam command="load" file="$(find exploration_preprocessing)/config/frontier_finder.yaml"/>
+  <rosparam command="load" file="$(find exploration_preprocessing)/config/hgrid.yaml"/>
+  <rosparam command="load" file="$(find exploration_utils)/config/perception_utils.yaml"/>
+  <rosparam command="load" file="$(find exploration_manager)/config/exploration_manager.yaml"/>
+  <rosparam command="load" file="$(find falcon_native)/config/$(arg interface_config)"/>
+  <node pkg="falcon_native" type="sensor_bridge.py" name="native_sensor" output="screen" required="true">
+    <param name="depth_mode" value="$(arg depth_mode)" type="str"/>
+  </node>
+  <node pkg="exploration_manager" type="exploration_node" name="exploration_node" output="screen" launch-prefix="$(find falcon_native)/scripts/wait_sensor.py">
+    <param name="native_log_dir" value="$(arg log_dir)"/>
+    <remap from="/odom_world" to="/native/odom_world"/>
+    <remap from="/transformer/sensor_pose_topic" to="/native/sensor_pose"/>
+    <remap from="/voxel_mapping/depth_image" to="/native/depth"/>
+    <remap from="/move_base_simple/goal" to="/native/trigger"/>
+  </node>
+  <node pkg="fast_planner" type="traj_server" name="traj_server" output="screen"/>
+</launch>

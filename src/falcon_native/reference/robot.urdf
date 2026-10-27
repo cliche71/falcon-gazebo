@@ -1,0 +1,722 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="hummingbird">
+  
+  
+  
+  
+  <link name="hummingbird/base_link" />
+  <joint name="hummingbird/base_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0" />
+    <parent link="hummingbird/base_link" />
+    <child link="hummingbird/base_link_inertia" />
+  </joint>
+  <link name="hummingbird/base_link_inertia">
+    <inertial>
+      <mass value="0.68" />
+      
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.007" ixy="0.0" ixz="0.0" iyy="0.007" iyz="0.0" izz="0.012" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="package://rotors_description/meshes/hummingbird.dae" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <geometry>
+        <box size="0.1 0.1 0.12" />
+        
+      </geometry>
+    </collision>
+  </link>
+  
+  <gazebo>
+    <plugin filename="librotors_gazebo_multirotor_base_plugin.so" name="multirotor_base_plugin">
+      <robotNamespace>hummingbird</robotNamespace>
+      <linkName>hummingbird/base_link</linkName>
+      <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+    </plugin>
+  </gazebo>
+  <joint name="hummingbird/rotor_0_joint" type="continuous">
+    <origin rpy="0 0 0" xyz="0.17 0 0.01" />
+    <axis xyz="0 0 1" />
+    
+    
+    <parent link="hummingbird/base_link" />
+    <child link="hummingbird/rotor_0" />
+  </joint>
+  <link name="hummingbird/rotor_0">
+    <inertial>
+      <mass value="0.009" />
+      
+      <inertia ixx="1.754999298e-06" ixy="0.0" ixz="0.0" iyy="7.506746997300002e-05" iyz="0.0" izz="7.668746932500001e-05" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://rotors_description/meshes/propeller_cw.dae" scale="0.1 0.1 0.1" />
+        
+        
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.005" radius="0.1" />
+        
+      </geometry>
+    </collision>
+  </link>
+  <gazebo>
+    <plugin filename="librotors_gazebo_motor_model.so" name="hummingbird_front_motor_model">
+      <robotNamespace>hummingbird</robotNamespace>
+      <jointName>hummingbird/rotor_0_joint</jointName>
+      <linkName>hummingbird/rotor_0</linkName>
+      <turningDirection>cw</turningDirection>
+      <timeConstantUp>0.0125</timeConstantUp>
+      <timeConstantDown>0.025</timeConstantDown>
+      <maxRotVelocity>838</maxRotVelocity>
+      <motorConstant>8.54858e-06</motorConstant>
+      <momentConstant>0.016</momentConstant>
+      <commandSubTopic>gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>0</motorNumber>
+      <rotorDragCoefficient>8.06428e-05</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>motor_speed/0</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+    </plugin>
+  </gazebo>
+  <gazebo reference="hummingbird/rotor_0">
+    <material>Gazebo/Red</material>
+  </gazebo>
+  <joint name="hummingbird/rotor_1_joint" type="continuous">
+    <origin rpy="0 0 0" xyz="0 0.17 0.01" />
+    <axis xyz="0 0 1" />
+    
+    
+    <parent link="hummingbird/base_link" />
+    <child link="hummingbird/rotor_1" />
+  </joint>
+  <link name="hummingbird/rotor_1">
+    <inertial>
+      <mass value="0.009" />
+      
+      <inertia ixx="1.754999298e-06" ixy="0.0" ixz="0.0" iyy="7.506746997300002e-05" iyz="0.0" izz="7.668746932500001e-05" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://rotors_description/meshes/propeller_ccw.dae" scale="0.1 0.1 0.1" />
+        
+        
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.005" radius="0.1" />
+        
+      </geometry>
+    </collision>
+  </link>
+  <gazebo>
+    <plugin filename="librotors_gazebo_motor_model.so" name="hummingbird_left_motor_model">
+      <robotNamespace>hummingbird</robotNamespace>
+      <jointName>hummingbird/rotor_1_joint</jointName>
+      <linkName>hummingbird/rotor_1</linkName>
+      <turningDirection>ccw</turningDirection>
+      <timeConstantUp>0.0125</timeConstantUp>
+      <timeConstantDown>0.025</timeConstantDown>
+      <maxRotVelocity>838</maxRotVelocity>
+      <motorConstant>8.54858e-06</motorConstant>
+      <momentConstant>0.016</momentConstant>
+      <commandSubTopic>gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>1</motorNumber>
+      <rotorDragCoefficient>8.06428e-05</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>motor_speed/1</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+    </plugin>
+  </gazebo>
+  <gazebo reference="hummingbird/rotor_1">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+  <joint name="hummingbird/rotor_2_joint" type="continuous">
+    <origin rpy="0 0 0" xyz="-0.17 0 0.01" />
+    <axis xyz="0 0 1" />
+    
+    
+    <parent link="hummingbird/base_link" />
+    <child link="hummingbird/rotor_2" />
+  </joint>
+  <link name="hummingbird/rotor_2">
+    <inertial>
+      <mass value="0.009" />
+      
+      <inertia ixx="1.754999298e-06" ixy="0.0" ixz="0.0" iyy="7.506746997300002e-05" iyz="0.0" izz="7.668746932500001e-05" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://rotors_description/meshes/propeller_cw.dae" scale="0.1 0.1 0.1" />
+        
+        
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.005" radius="0.1" />
+        
+      </geometry>
+    </collision>
+  </link>
+  <gazebo>
+    <plugin filename="librotors_gazebo_motor_model.so" name="hummingbird_back_motor_model">
+      <robotNamespace>hummingbird</robotNamespace>
+      <jointName>hummingbird/rotor_2_joint</jointName>
+      <linkName>hummingbird/rotor_2</linkName>
+      <turningDirection>cw</turningDirection>
+      <timeConstantUp>0.0125</timeConstantUp>
+      <timeConstantDown>0.025</timeConstantDown>
+      <maxRotVelocity>838</maxRotVelocity>
+      <motorConstant>8.54858e-06</motorConstant>
+      <momentConstant>0.016</momentConstant>
+      <commandSubTopic>gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>2</motorNumber>
+      <rotorDragCoefficient>8.06428e-05</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>motor_speed/2</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+    </plugin>
+  </gazebo>
+  <gazebo reference="hummingbird/rotor_2">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+  <joint name="hummingbird/rotor_3_joint" type="continuous">
+    <origin rpy="0 0 0" xyz="0 -0.17 0.01" />
+    <axis xyz="0 0 1" />
+    
+    
+    <parent link="hummingbird/base_link" />
+    <child link="hummingbird/rotor_3" />
+  </joint>
+  <link name="hummingbird/rotor_3">
+    <inertial>
+      <mass value="0.009" />
+      
+      <inertia ixx="1.754999298e-06" ixy="0.0" ixz="0.0" iyy="7.506746997300002e-05" iyz="0.0" izz="7.668746932500001e-05" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://rotors_description/meshes/propeller_ccw.dae" scale="0.1 0.1 0.1" />
+        
+        
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.005" radius="0.1" />
+        
+      </geometry>
+    </collision>
+  </link>
+  <gazebo>
+    <plugin filename="librotors_gazebo_motor_model.so" name="hummingbird_right_motor_model">
+      <robotNamespace>hummingbird</robotNamespace>
+      <jointName>hummingbird/rotor_3_joint</jointName>
+      <linkName>hummingbird/rotor_3</linkName>
+      <turningDirection>ccw</turningDirection>
+      <timeConstantUp>0.0125</timeConstantUp>
+      <timeConstantDown>0.025</timeConstantDown>
+      <maxRotVelocity>838</maxRotVelocity>
+      <motorConstant>8.54858e-06</motorConstant>
+      <momentConstant>0.016</momentConstant>
+      <commandSubTopic>gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>3</motorNumber>
+      <rotorDragCoefficient>8.06428e-05</rotorDragCoefficient>
+      <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+      <motorSpeedPubTopic>motor_speed/3</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+    </plugin>
+  </gazebo>
+  <gazebo reference="hummingbird/rotor_3">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+  <gazebo>
+    <plugin filename="librotors_gazebo_controller_interface.so" name="controller_interface">
+      <robotNamespace>hummingbird</robotNamespace>
+      <commandAttitudeThrustSubTopic>command/attitude</commandAttitudeThrustSubTopic>
+      <commandRateThrustSubTopic>command/rate</commandRateThrustSubTopic>
+      <commandMotorSpeedSubTopic>command/motor_speed</commandMotorSpeedSubTopic>
+      <imuSubTopic>imu</imuSubTopic>
+      <motorSpeedCommandPubTopic>gazebo/command/motor_speed</motorSpeedCommandPubTopic>
+    </plugin>
+  </gazebo>
+  
+  <link name="hummingbird/imu_link">
+    <inertial>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+      <mass value="0.015" />
+      
+      <origin rpy="0 0 0" xyz="0 0 0" />
+    </inertial>
+  </link>
+  
+  <joint name="hummingbird/imu_joint" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 0" />
+    <parent link="hummingbird/base_link" />
+    <child link="hummingbird/imu_link" />
+    <limit effort="0" lower="0" upper="0" velocity="0" />
+  </joint>
+  <gazebo>
+    <plugin filename="librotors_gazebo_imu_plugin.so" name="rotors_gazebo_imu_plugin">
+      
+      <robotNamespace>hummingbird</robotNamespace>
+      
+      <linkName>hummingbird/imu_link</linkName>
+      
+      <imuTopic>imu</imuTopic>
+      
+      <gyroscopeNoiseDensity>0.0003394</gyroscopeNoiseDensity>
+      
+      <gyroscopeRandomWalk>3.8785e-05</gyroscopeRandomWalk>
+      
+      <gyroscopeBiasCorrelationTime>1000.0</gyroscopeBiasCorrelationTime>
+      
+      <gyroscopeTurnOnBiasSigma>0.0087</gyroscopeTurnOnBiasSigma>
+      
+      <accelerometerNoiseDensity>0.004</accelerometerNoiseDensity>
+      
+      <accelerometerRandomWalk>0.006</accelerometerRandomWalk>
+      
+      <accelerometerBiasCorrelationTime>300.0</accelerometerBiasCorrelationTime>
+      
+      <accelerometerTurnOnBiasSigma>0.196</accelerometerTurnOnBiasSigma>
+      
+    </plugin>
+  </gazebo>
+  
+  <link name="hummingbird/imugt_link">
+    <inertial>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+      <mass value="1e-05" />
+      
+      <origin rpy="0 0 0" xyz="0 0 0" />
+    </inertial>
+  </link>
+  
+  <joint name="hummingbird/imugt_joint" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 0" />
+    <parent link="hummingbird/base_link" />
+    <child link="hummingbird/imugt_link" />
+    <limit effort="0" lower="0" upper="0" velocity="0" />
+  </joint>
+  <gazebo>
+    <plugin filename="librotors_gazebo_imu_plugin.so" name="rotors_gazebo_imugt_plugin">
+      
+      <robotNamespace>hummingbird</robotNamespace>
+      
+      <linkName>hummingbird/imugt_link</linkName>
+      
+      <imuTopic>ground_truth/imu</imuTopic>
+      
+      <gyroscopeNoiseDensity>0.0</gyroscopeNoiseDensity>
+      
+      <gyroscopeRandomWalk>0.0</gyroscopeRandomWalk>
+      
+      <gyroscopeBiasCorrelationTime>1000.0</gyroscopeBiasCorrelationTime>
+      
+      <gyroscopeTurnOnBiasSigma>0.0</gyroscopeTurnOnBiasSigma>
+      
+      <accelerometerNoiseDensity>0.0</accelerometerNoiseDensity>
+      
+      <accelerometerRandomWalk>0.0</accelerometerRandomWalk>
+      
+      <accelerometerBiasCorrelationTime>300.0</accelerometerBiasCorrelationTime>
+      
+      <accelerometerTurnOnBiasSigma>0.0</accelerometerTurnOnBiasSigma>
+      
+    </plugin>
+  </gazebo>
+  
+  <link name="hummingbird/odometry_sensorgt_link">
+    <inertial>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+      <mass value="1e-05" />
+      
+    </inertial>
+  </link>
+  
+  <joint name="hummingbird/odometry_sensorgt_joint" type="revolute">
+    <parent link="hummingbird/base_link" />
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0" />
+    <child link="hummingbird/odometry_sensorgt_link" />
+    <limit effort="0" lower="0" upper="0" velocity="0" />
+  </joint>
+  <gazebo>
+    <plugin filename="librotors_gazebo_odometry_plugin.so" name="odometry_sensorgt">
+      <linkName>hummingbird/odometry_sensorgt_link</linkName>
+      <robotNamespace>hummingbird</robotNamespace>
+      <poseTopic>ground_truth/pose</poseTopic>
+      <poseWithCovarianceTopic>ground_truth/pose_with_covariance</poseWithCovarianceTopic>
+      <positionTopic>ground_truth/position</positionTopic>
+      <transformTopic>ground_truth/transform</transformTopic>
+      <odometryTopic>ground_truth/odometry</odometryTopic>
+      <parentFrameId>world</parentFrameId>
+      
+      <childFrameId>hummingbird/base_link</childFrameId>
+      <measurementDivisor>1</measurementDivisor>
+      
+      <measurementDelay>0</measurementDelay>
+      
+      <unknownDelay>0.0</unknownDelay>
+      
+      <noiseNormalPosition>0 0 0</noiseNormalPosition>
+      
+      <noiseNormalQuaternion>0 0 0</noiseNormalQuaternion>
+      
+      <noiseNormalLinearVelocity>0 0 0</noiseNormalLinearVelocity>
+      
+      <noiseNormalAngularVelocity>0 0 0</noiseNormalAngularVelocity>
+      
+      <noiseUniformPosition>0 0 0</noiseUniformPosition>
+      
+      <noiseUniformQuaternion>0 0 0</noiseUniformQuaternion>
+      
+      <noiseUniformLinearVelocity>0 0 0</noiseUniformLinearVelocity>
+      
+      <noiseUniformAngularVelocity>0 0 0</noiseUniformAngularVelocity>
+    </plugin>
+  </gazebo>
+  
+  <link name="hummingbird/odometry_sensor1_link">
+    <inertial>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+      <mass value="1e-05" />
+      
+    </inertial>
+  </link>
+  
+  <joint name="hummingbird/odometry_sensor1_joint" type="revolute">
+    <parent link="hummingbird/base_link" />
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0" />
+    <child link="hummingbird/odometry_sensor1_link" />
+    <limit effort="0" lower="0" upper="0" velocity="0" />
+  </joint>
+  <gazebo>
+    <plugin filename="librotors_gazebo_odometry_plugin.so" name="odometry_sensor1">
+      <linkName>hummingbird/odometry_sensor1_link</linkName>
+      <robotNamespace>hummingbird</robotNamespace>
+      <poseTopic>odometry_sensor1/pose</poseTopic>
+      <poseWithCovarianceTopic>odometry_sensor1/pose_with_covariance</poseWithCovarianceTopic>
+      <positionTopic>odometry_sensor1/position</positionTopic>
+      <transformTopic>odometry_sensor1/transform</transformTopic>
+      <odometryTopic>odometry_sensor1/odometry</odometryTopic>
+      <parentFrameId>world</parentFrameId>
+      
+      <childFrameId>hummingbird/odometry_sensor1</childFrameId>
+      <measurementDivisor>1</measurementDivisor>
+      
+      <measurementDelay>0</measurementDelay>
+      
+      <unknownDelay>0.0</unknownDelay>
+      
+      <noiseNormalPosition>0 0 0</noiseNormalPosition>
+      
+      <noiseNormalQuaternion>0 0 0</noiseNormalQuaternion>
+      
+      <noiseNormalLinearVelocity>0 0 0</noiseNormalLinearVelocity>
+      
+      <noiseNormalAngularVelocity>0 0 0</noiseNormalAngularVelocity>
+      
+      <noiseUniformPosition>0 0 0</noiseUniformPosition>
+      
+      <noiseUniformQuaternion>0 0 0</noiseUniformQuaternion>
+      
+      <noiseUniformLinearVelocity>0 0 0</noiseUniformLinearVelocity>
+      
+      <noiseUniformAngularVelocity>0 0 0</noiseUniformAngularVelocity>
+    </plugin>
+  </gazebo>
+  
+  <link name="hummingbird/vi_sensor/vi_sensor_link">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <geometry>
+        <box size="0.03 0.133 0.057" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="package://rotors_description/meshes/vi_sensor.dae" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.13" />
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+  <joint name="hummingbird/vi_sensor_vi_sensor_joint" type="fixed">
+    <origin rpy="0.0 0.1 0.0" xyz="0.1 0.0 -0.03" />
+    <parent link="hummingbird/base_link" />
+    <child link="hummingbird/vi_sensor/vi_sensor_link" />
+  </joint>
+  <link name="hummingbird/vi_sensor/camera_left_link">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <geometry>
+        <cylinder length="0.01" radius="0.007" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1e-5" />
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+  <joint name="hummingbird/vi_sensor/camera_left_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0.015 0.055 0.0065" />
+    <parent link="hummingbird/vi_sensor/vi_sensor_link" />
+    <child link="hummingbird/vi_sensor/camera_left_link" />
+  </joint>
+  <link name="hummingbird/vi_sensor/camera_right_link">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <geometry>
+        <cylinder length="0.01" radius="0.007" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1e-5" />
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+  <joint name="hummingbird/vi_sensor/camera_right_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0.015 -0.055 0.0065" />
+    <parent link="hummingbird/vi_sensor/vi_sensor_link" />
+    <child link="hummingbird/vi_sensor/camera_right_link" />
+  </joint>
+  <link name="hummingbird/vi_sensor/camera_left_optical_link" />
+  <joint name="hummingbird/vi_sensor/camera_left_optical_joint" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0" />
+    <parent link="hummingbird/vi_sensor/camera_left_link" />
+    <child link="hummingbird/vi_sensor/camera_left_optical_link" />
+  </joint>
+  
+  <gazebo reference="hummingbird/vi_sensor/camera_left_link">
+    <sensor name="hummingbird/vi_sensor_stereo_camera" type="multicamera">
+      <update_rate>30.0</update_rate>
+      <camera name="left">
+        <pose>0 0 0 0 0 0</pose>
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>752</width>
+          <height>480</height>
+          <format>L8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>30.0</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <camera name="right">
+        <pose>0 -0.11 0 0 0 0</pose>
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>752</width>
+          <height>480</height>
+          <format>L8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>30.0</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      
+      <plugin filename="libgazebo_ros_multicamera.so" name="hummingbird/vi_sensor_stereo_camera_controller">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>vi_sensor</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>vi_sensor/camera_left_link</frameName>
+        <hackBaseline>0.11</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>
+  <link name="hummingbird/vi_sensor/camera_depth_link">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <geometry>
+        <cylinder length="0.01" radius="0.007" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1e-5" />
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+  <joint name="hummingbird/vi_sensor/camera_depth_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0.015 0.055 0.0065" />
+    <parent link="hummingbird/vi_sensor/vi_sensor_link" />
+    <child link="hummingbird/vi_sensor/camera_depth_link" />
+    <limit effort="0" lower="0" upper="0" velocity="0" />
+  </joint>
+  
+  <link name="hummingbird/vi_sensor/camera_depth_optical_center_link" />
+  <joint name="hummingbird/vi_sensor/camera_depth_optical_center_joint" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0" />
+    <parent link="hummingbird/vi_sensor/camera_depth_link" />
+    <child link="hummingbird/vi_sensor/camera_depth_optical_center_link" />
+    <limit effort="0" lower="0" upper="0" velocity="0" />
+  </joint>
+  <gazebo reference="hummingbird/vi_sensor/camera_depth_link">
+    <sensor name="hummingbird/vi_sensor_camera_{camera_suffix}" type="depth">
+      <always_on>true</always_on>
+      <update_rate>15.0</update_rate>
+      <camera>
+        <horizontal_fov>1.381245808672825</horizontal_fov>
+        <image>
+          <format>L8</format>
+          <width>640</width>
+          <height>480</height>
+        </image>
+        <clip>
+          <near>0.35</near>
+          <far>5.0</far>
+        </clip>
+      </camera>
+      <plugin filename="libgazebo_ros_openni_kinect.so" name="hummingbird/vi_sensor_camera_{camera_suffix}">
+        <robotNamespace>hummingbird/vi_sensor</robotNamespace>
+        <alwaysOn>true</alwaysOn>
+        <baseline>0.11</baseline>
+        <updateRate>15.0</updateRate>
+        <cameraName>camera_depth</cameraName>
+        <imageTopicName>camera/image_raw</imageTopicName>
+        <cameraInfoTopicName>camera/camera_info</cameraInfoTopicName>
+        <depthImageTopicName>depth/disparity</depthImageTopicName>
+        <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+        <pointCloudTopicName>depth/points</pointCloudTopicName>
+        <frameName>hummingbird/fuel_official_camera_optical_link</frameName>
+        <pointCloudCutoff>0.35</pointCloudCutoff>
+        <pointCloudCutoffMax>5.0</pointCloudCutoffMax>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    <pose>-0.11749541902720743 -0.055 0.013366783293657959 0 -0.099999999999999992 0</pose></sensor>
+  </gazebo>
+  
+  <link name="hummingbird/vi_sensor/ground_truth/odometry_sensor_link">
+    <inertial>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+      <mass value="1e-05" />
+      
+    </inertial>
+  </link>
+  
+  <joint name="hummingbird/vi_sensor/ground_truth/odometry_sensor_joint" type="revolute">
+    <parent link="hummingbird/vi_sensor/vi_sensor_link" />
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0" />
+    <child link="hummingbird/vi_sensor/ground_truth/odometry_sensor_link" />
+    <limit effort="0" lower="0" upper="0" velocity="0" />
+  </joint>
+  <gazebo>
+    <plugin filename="librotors_gazebo_odometry_plugin.so" name="odometry_sensor">
+      <linkName>hummingbird/vi_sensor/ground_truth/odometry_sensor_link</linkName>
+      <robotNamespace>hummingbird/vi_sensor/ground_truth</robotNamespace>
+      <poseTopic>pose</poseTopic>
+      <poseWithCovarianceTopic>pose_with_covariance</poseWithCovarianceTopic>
+      <positionTopic>position</positionTopic>
+      <transformTopic>transform</transformTopic>
+      <odometryTopic>odometry</odometryTopic>
+      <parentFrameId>world</parentFrameId>
+      
+      <childFrameId>hummingbird/vi_sensor/base_link</childFrameId>
+      <measurementDivisor>1</measurementDivisor>
+      
+      <measurementDelay>0</measurementDelay>
+      
+      <unknownDelay>0.0</unknownDelay>
+      
+      <noiseNormalPosition>0 0 0</noiseNormalPosition>
+      
+      <noiseNormalQuaternion>0 0 0</noiseNormalQuaternion>
+      
+      <noiseNormalLinearVelocity>0 0 0</noiseNormalLinearVelocity>
+      
+      <noiseNormalAngularVelocity>0 0 0</noiseNormalAngularVelocity>
+      
+      <noiseUniformPosition>0 0 0</noiseUniformPosition>
+      
+      <noiseUniformQuaternion>0 0 0</noiseUniformQuaternion>
+      
+      <noiseUniformLinearVelocity>0 0 0</noiseUniformLinearVelocity>
+      
+      <noiseUniformAngularVelocity>0 0 0</noiseUniformAngularVelocity>
+    </plugin>
+  </gazebo>
+  
+  <link name="hummingbird/vi_sensor/imu_link">
+    <inertial>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+      <mass value="0.015" />
+      
+      <origin rpy="0 0 0" xyz="0 0 0" />
+    </inertial>
+  </link>
+  
+  <joint name="hummingbird/vi_sensor/imu_joint" type="revolute">
+    <origin rpy="0 0 0" xyz="0.015 0 0.0113" />
+    <parent link="hummingbird/vi_sensor/vi_sensor_link" />
+    <child link="hummingbird/vi_sensor/imu_link" />
+    <limit effort="0" lower="0" upper="0" velocity="0" />
+  </joint>
+  <gazebo>
+    <plugin filename="librotors_gazebo_imu_plugin.so" name="rotors_gazebo_imu_plugin">
+      
+      <robotNamespace>hummingbird/vi_sensor</robotNamespace>
+      
+      <linkName>hummingbird/vi_sensor/imu_link</linkName>
+      
+      <imuTopic>imu</imuTopic>
+      
+      <gyroscopeNoiseDensity>0.0003394</gyroscopeNoiseDensity>
+      
+      <gyroscopeRandomWalk>3.8785e-05</gyroscopeRandomWalk>
+      
+      <gyroscopeBiasCorrelationTime>1000.0</gyroscopeBiasCorrelationTime>
+      
+      <gyroscopeTurnOnBiasSigma>0.0087</gyroscopeTurnOnBiasSigma>
+      
+      <accelerometerNoiseDensity>0.004</accelerometerNoiseDensity>
+      
+      <accelerometerRandomWalk>0.006</accelerometerRandomWalk>
+      
+      <accelerometerBiasCorrelationTime>300.0</accelerometerBiasCorrelationTime>
+      
+      <accelerometerTurnOnBiasSigma>0.196</accelerometerTurnOnBiasSigma>
+      
+    </plugin>
+  </gazebo>
+<link name="hummingbird/fuel_official_camera_optical_link" /><joint name="hummingbird/fuel_official_camera_optical_joint" type="fixed"><origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966" /><parent link="hummingbird/base_link" /><child link="hummingbird/fuel_official_camera_optical_link" /></joint></robot>

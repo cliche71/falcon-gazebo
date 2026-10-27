@@ -1,0 +1,17 @@
+<launch>
+  <!-- No prepare/start calls and no exploration duration limit. -->
+  <arg name="depth_mode" default="official_compatible"/>
+  <arg name="gui" default="false"/>
+  <arg name="log_dir" default="$(find falcon_native)/../../logs/manual_office"/>
+  <include file="$(find falcon_native)/launch/simulation.launch">
+    <arg name="depth_mode" value="$(arg depth_mode)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+  <include file="$(find falcon_native)/launch/planner.launch">
+    <arg name="depth_mode" value="$(arg depth_mode)"/>
+    <arg name="log_dir" value="$(arg log_dir)"/>
+  </include>
+  <arg name="profile" default="original_a"/>
+  <rosparam command="load" file="$(find falcon_native)/../../config/profiles/$(arg profile).yaml"/>
+  <node pkg="falcon_native" type="command_bridge.py" name="native_command" output="screen"/>
+</launch>

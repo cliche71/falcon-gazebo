@@ -1,0 +1,27 @@
+# Generated from the running RotorS model. Load before controller startup.
+mass: 0.8760699999999998
+rotor_configuration:
+  '0':
+    angle: -4.098768850354487e-06
+    arm_length: 0.153168850754423
+    rotor_force_constant: 8.54858e-06
+    rotor_moment_constant: 0.016
+    direction: -1.0
+  '1':
+    angle: 1.669481839297735
+    arm_length: 0.17083054215245433
+    rotor_force_constant: 8.54858e-06
+    rotor_moment_constant: 0.016
+    direction: 1.0
+  '2':
+    angle: -3.1415892933165366
+    arm_length: 0.18683114924791844
+    rotor_force_constant: 8.54858e-06
+    rotor_moment_constant: 0.016
+    direction: -1.0
+  '3':
+    angle: -1.6694811151395688
+    arm_length: 0.17083179165081425
+    rotor_force_constant: 8.54858e-06
+    rotor_moment_constant: 0.016
+    direction: 1.0

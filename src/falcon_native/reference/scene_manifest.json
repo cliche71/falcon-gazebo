@@ -1,0 +1,1848 @@
+{
+  "schema": 1,
+  "package": "fuel_gazebo_official_world",
+  "version": "0.1.0",
+  "source_repository": "https://github.com/HKUST-Aerial-Robotics/FUEL",
+  "source_commit": "662dd23c7b52b258d3c4a0155ff6632118e8984f",
+  "source_path": "uav_simulator/map_generator/resource/office.pcd",
+  "source_sha256": "f81065db52a6d83ae6d9bb357f321e45327f59eb7105cd005d18e8a1ba3f2336",
+  "source_points": 207840,
+  "source_bounds_min": [
+    -7.9672952,
+    -15.123819,
+    -0.5
+  ],
+  "source_bounds_max": [
+    7.667995,
+    15.184342,
+    2.4000001
+  ],
+  "resolution_m": 0.1,
+  "quantization": "floor(point / resolution + 0.5 + 1e-7); cell centre = index * resolution; cell half-width = resolution / 2",
+  "coordinate_transform": "identity; no translation, rotation, scale or cropping",
+  "grid_min": [
+    -80,
+    -151,
+    -5
+  ],
+  "grid_max": [
+    77,
+    152,
+    24
+  ],
+  "occupied_cells": 202920,
+  "merge_order": [
+    "z",
+    "y",
+    "x"
+  ],
+  "box_count": 147,
+  "merge_validation": "Exact integer-cell partition: every occupied cell is covered exactly once and no unoccupied cell is covered. No dilation or hole filling.",
+  "model_name": "fuel_official_office",
+  "link_marker": "geometry_f81065db52a6_v010_b147",
+  "model_sdf_sha256": "454d21e500b32b57e6f07ff1f3c5f3663ddb77794efc35d72f3f5c808e5ff771",
+  "official_initial_position": [
+    0,
+    0,
+    1
+  ],
+  "official_exploration_min": [
+    -10,
+    -15,
+    0
+  ],
+  "official_exploration_max": [
+    10,
+    15,
+    2
+  ],
+  "official_map_size": [
+    50,
+    50,
+    10
+  ],
+  "clearance_test": {
+    "segment_start": [
+      0,
+      0,
+      1
+    ],
+    "segment_end": [
+      0,
+      0,
+      2
+    ],
+    "margin_m": 0.35,
+    "ground_z": 0
+  },
+  "boxes": [
+    {
+      "min_inclusive": [
+        -80,
+        -148,
+        -5
+      ],
+      "max_exclusive": [
+        -76,
+        -2,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -79,
+        -2,
+        -5
+      ],
+      "max_exclusive": [
+        -75,
+        151,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -78,
+        -151,
+        -5
+      ],
+      "max_exclusive": [
+        73,
+        -148,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -78,
+        151,
+        -5
+      ],
+      "max_exclusive": [
+        76,
+        152,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -76,
+        -148,
+        -5
+      ],
+      "max_exclusive": [
+        78,
+        -147,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -75,
+        148,
+        -5
+      ],
+      "max_exclusive": [
+        2,
+        151,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -54,
+        -117,
+        -5
+      ],
+      "max_exclusive": [
+        -53,
+        -114,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -54,
+        118,
+        -5
+      ],
+      "max_exclusive": [
+        -32,
+        122,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -53,
+        -117,
+        -5
+      ],
+      "max_exclusive": [
+        -52,
+        -115,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -53,
+        -114,
+        -5
+      ],
+      "max_exclusive": [
+        -47,
+        -113,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -53,
+        -32,
+        -5
+      ],
+      "max_exclusive": [
+        -41,
+        -29,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -53,
+        19,
+        -5
+      ],
+      "max_exclusive": [
+        -49,
+        66,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -52,
+        -118,
+        -5
+      ],
+      "max_exclusive": [
+        -51,
+        -116,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -52,
+        -115,
+        -5
+      ],
+      "max_exclusive": [
+        -50,
+        -114,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -52,
+        -29,
+        -5
+      ],
+      "max_exclusive": [
+        -40,
+        -28,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -51,
+        -117,
+        -5
+      ],
+      "max_exclusive": [
+        -50,
+        -115,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -51,
+        -113,
+        -5
+      ],
+      "max_exclusive": [
+        -48,
+        -111,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -50,
+        -116,
+        -5
+      ],
+      "max_exclusive": [
+        -49,
+        -115,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -49,
+        -115,
+        -5
+      ],
+      "max_exclusive": [
+        -48,
+        -114,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -49,
+        -111,
+        -5
+      ],
+      "max_exclusive": [
+        -47,
+        -109,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -49,
+        43,
+        -5
+      ],
+      "max_exclusive": [
+        -17,
+        47,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -48,
+        -112,
+        -5
+      ],
+      "max_exclusive": [
+        -45,
+        -111,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -47,
+        -113,
+        -5
+      ],
+      "max_exclusive": [
+        -46,
+        -112,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -47,
+        -110,
+        -5
+      ],
+      "max_exclusive": [
+        -45,
+        -108,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -46,
+        -111,
+        -5
+      ],
+      "max_exclusive": [
+        -44,
+        -110,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -46,
+        -108,
+        -5
+      ],
+      "max_exclusive": [
+        -43,
+        -106,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -45,
+        -110,
+        -5
+      ],
+      "max_exclusive": [
+        -43,
+        -109,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -44,
+        -109,
+        -5
+      ],
+      "max_exclusive": [
+        -42,
+        -108,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -44,
+        -106,
+        -5
+      ],
+      "max_exclusive": [
+        -42,
+        -104,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -43,
+        -108,
+        -5
+      ],
+      "max_exclusive": [
+        -40,
+        -107,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -42,
+        -107,
+        -5
+      ],
+      "max_exclusive": [
+        -40,
+        -106,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -42,
+        -105,
+        -5
+      ],
+      "max_exclusive": [
+        -40,
+        -103,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -41,
+        -106,
+        -5
+      ],
+      "max_exclusive": [
+        -39,
+        -105,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -41,
+        -103,
+        -5
+      ],
+      "max_exclusive": [
+        -32,
+        -102,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -41,
+        -33,
+        -5
+      ],
+      "max_exclusive": [
+        -33,
+        -30,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -40,
+        -105,
+        -5
+      ],
+      "max_exclusive": [
+        -38,
+        -104,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -40,
+        -102,
+        -5
+      ],
+      "max_exclusive": [
+        -38,
+        -101,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -40,
+        -30,
+        -5
+      ],
+      "max_exclusive": [
+        -33,
+        -29,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -39,
+        -104,
+        -5
+      ],
+      "max_exclusive": [
+        -37,
+        -103,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -39,
+        -101,
+        -5
+      ],
+      "max_exclusive": [
+        -32,
+        -100,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -38,
+        -100,
+        -5
+      ],
+      "max_exclusive": [
+        -37,
+        -99,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -37,
+        -102,
+        -5
+      ],
+      "max_exclusive": [
+        -32,
+        -101,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -37,
+        -99,
+        -5
+      ],
+      "max_exclusive": [
+        -32,
+        -98,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -37,
+        -58,
+        -5
+      ],
+      "max_exclusive": [
+        -33,
+        -33,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -37,
+        -29,
+        -5
+      ],
+      "max_exclusive": [
+        -33,
+        -2,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -36,
+        -147,
+        -5
+      ],
+      "max_exclusive": [
+        -32,
+        -103,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -36,
+        -100,
+        -5
+      ],
+      "max_exclusive": [
+        -32,
+        -99,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -36,
+        -98,
+        -5
+      ],
+      "max_exclusive": [
+        -32,
+        -86,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -36,
+        91,
+        -5
+      ],
+      "max_exclusive": [
+        -32,
+        118,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -36,
+        122,
+        -5
+      ],
+      "max_exclusive": [
+        -32,
+        148,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -22,
+        60,
+        -5
+      ],
+      "max_exclusive": [
+        -18,
+        67,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -21,
+        21,
+        -5
+      ],
+      "max_exclusive": [
+        -17,
+        43,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -21,
+        47,
+        -5
+      ],
+      "max_exclusive": [
+        -17,
+        60,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -15,
+        -31,
+        -5
+      ],
+      "max_exclusive": [
+        -10,
+        -27,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -12,
+        119,
+        -5
+      ],
+      "max_exclusive": [
+        7,
+        123,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -10,
+        -32,
+        -5
+      ],
+      "max_exclusive": [
+        13,
+        -28,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -7,
+        -107,
+        -5
+      ],
+      "max_exclusive": [
+        16,
+        -103,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        -1,
+        -39,
+        -5
+      ],
+      "max_exclusive": [
+        3,
+        -32,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        0,
+        -50,
+        -5
+      ],
+      "max_exclusive": [
+        4,
+        -39,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        0,
+        49,
+        -5
+      ],
+      "max_exclusive": [
+        16,
+        53,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        2,
+        149,
+        -5
+      ],
+      "max_exclusive": [
+        78,
+        151,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        2,
+        152,
+        -5
+      ],
+      "max_exclusive": [
+        76,
+        153,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        3,
+        -121,
+        -5
+      ],
+      "max_exclusive": [
+        7,
+        -107,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        7,
+        118,
+        -5
+      ],
+      "max_exclusive": [
+        17,
+        122,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        15,
+        -76,
+        -5
+      ],
+      "max_exclusive": [
+        56,
+        -72,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        16,
+        -106,
+        -5
+      ],
+      "max_exclusive": [
+        21,
+        -102,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        22,
+        -1,
+        -5
+      ],
+      "max_exclusive": [
+        78,
+        3,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        32,
+        91,
+        -5
+      ],
+      "max_exclusive": [
+        36,
+        149,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        33,
+        32,
+        -5
+      ],
+      "max_exclusive": [
+        37,
+        67,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        35,
+        90,
+        -5
+      ],
+      "max_exclusive": [
+        52,
+        91,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        36,
+        91,
+        -5
+      ],
+      "max_exclusive": [
+        52,
+        94,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        37,
+        48,
+        -5
+      ],
+      "max_exclusive": [
+        54,
+        52,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        41,
+        -109,
+        -5
+      ],
+      "max_exclusive": [
+        42,
+        -107,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        42,
+        -111,
+        -5
+      ],
+      "max_exclusive": [
+        43,
+        -108,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        42,
+        -107,
+        -5
+      ],
+      "max_exclusive": [
+        44,
+        -106,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        43,
+        -112,
+        -5
+      ],
+      "max_exclusive": [
+        44,
+        -111,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        43,
+        -110,
+        -5
+      ],
+      "max_exclusive": [
+        44,
+        -107,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        44,
+        -113,
+        -5
+      ],
+      "max_exclusive": [
+        46,
+        -112,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        44,
+        -111,
+        -5
+      ],
+      "max_exclusive": [
+        46,
+        -109,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        44,
+        -108,
+        -5
+      ],
+      "max_exclusive": [
+        45,
+        -107,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        44,
+        -46,
+        -5
+      ],
+      "max_exclusive": [
+        48,
+        -19,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        45,
+        -114,
+        -5
+      ],
+      "max_exclusive": [
+        48,
+        -113,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        45,
+        -112,
+        -5
+      ],
+      "max_exclusive": [
+        48,
+        -111,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        45,
+        -109,
+        -5
+      ],
+      "max_exclusive": [
+        46,
+        -108,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        45,
+        -19,
+        -5
+      ],
+      "max_exclusive": [
+        49,
+        -1,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        46,
+        -116,
+        -5
+      ],
+      "max_exclusive": [
+        47,
+        -114,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        46,
+        -111,
+        -5
+      ],
+      "max_exclusive": [
+        47,
+        -110,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        47,
+        -117,
+        -5
+      ],
+      "max_exclusive": [
+        49,
+        -116,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        47,
+        -115,
+        -5
+      ],
+      "max_exclusive": [
+        50,
+        -114,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        47,
+        -113,
+        -5
+      ],
+      "max_exclusive": [
+        49,
+        -112,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        48,
+        -118,
+        -5
+      ],
+      "max_exclusive": [
+        51,
+        -117,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        48,
+        -116,
+        -5
+      ],
+      "max_exclusive": [
+        51,
+        -115,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        49,
+        -120,
+        -5
+      ],
+      "max_exclusive": [
+        50,
+        -118,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        49,
+        -114,
+        -5
+      ],
+      "max_exclusive": [
+        50,
+        -113,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        50,
+        -121,
+        -5
+      ],
+      "max_exclusive": [
+        52,
+        -120,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        50,
+        -119,
+        -5
+      ],
+      "max_exclusive": [
+        53,
+        -118,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        50,
+        -117,
+        -5
+      ],
+      "max_exclusive": [
+        52,
+        -116,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        51,
+        -122,
+        -5
+      ],
+      "max_exclusive": [
+        54,
+        -121,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        51,
+        -120,
+        -5
+      ],
+      "max_exclusive": [
+        54,
+        -119,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        52,
+        -124,
+        -5
+      ],
+      "max_exclusive": [
+        53,
+        -122,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        52,
+        -118,
+        -5
+      ],
+      "max_exclusive": [
+        53,
+        -117,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        53,
+        -125,
+        -5
+      ],
+      "max_exclusive": [
+        55,
+        -124,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        53,
+        -123,
+        -5
+      ],
+      "max_exclusive": [
+        57,
+        -122,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        53,
+        -121,
+        -5
+      ],
+      "max_exclusive": [
+        55,
+        -120,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        54,
+        -126,
+        -5
+      ],
+      "max_exclusive": [
+        59,
+        -125,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        54,
+        -124,
+        -5
+      ],
+      "max_exclusive": [
+        57,
+        -123,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        54,
+        49,
+        -5
+      ],
+      "max_exclusive": [
+        55,
+        53,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        55,
+        -128,
+        -5
+      ],
+      "max_exclusive": [
+        57,
+        -126,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        55,
+        -122,
+        -5
+      ],
+      "max_exclusive": [
+        56,
+        -121,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        56,
+        -125,
+        -5
+      ],
+      "max_exclusive": [
+        58,
+        -124,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        57,
+        -130,
+        -5
+      ],
+      "max_exclusive": [
+        58,
+        -127,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        58,
+        -132,
+        -5
+      ],
+      "max_exclusive": [
+        60,
+        -130,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        58,
+        -129,
+        -5
+      ],
+      "max_exclusive": [
+        59,
+        -126,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        59,
+        -130,
+        -5
+      ],
+      "max_exclusive": [
+        61,
+        -128,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        59,
+        -127,
+        -5
+      ],
+      "max_exclusive": [
+        60,
+        -126,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        60,
+        -134,
+        -5
+      ],
+      "max_exclusive": [
+        61,
+        -131,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        60,
+        -128,
+        -5
+      ],
+      "max_exclusive": [
+        61,
+        -127,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        61,
+        -136,
+        -5
+      ],
+      "max_exclusive": [
+        63,
+        -134,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        61,
+        -133,
+        -5
+      ],
+      "max_exclusive": [
+        62,
+        -129,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        62,
+        -134,
+        -5
+      ],
+      "max_exclusive": [
+        64,
+        -132,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        62,
+        -131,
+        -5
+      ],
+      "max_exclusive": [
+        63,
+        -130,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        63,
+        -138,
+        -5
+      ],
+      "max_exclusive": [
+        64,
+        -135,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        63,
+        -132,
+        -5
+      ],
+      "max_exclusive": [
+        64,
+        -131,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        64,
+        -140,
+        -5
+      ],
+      "max_exclusive": [
+        66,
+        -138,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        64,
+        -137,
+        -5
+      ],
+      "max_exclusive": [
+        65,
+        -133,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        65,
+        -138,
+        -5
+      ],
+      "max_exclusive": [
+        67,
+        -136,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        65,
+        -135,
+        -5
+      ],
+      "max_exclusive": [
+        66,
+        -134,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        66,
+        -142,
+        -5
+      ],
+      "max_exclusive": [
+        67,
+        -139,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        66,
+        -136,
+        -5
+      ],
+      "max_exclusive": [
+        67,
+        -135,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        67,
+        -143,
+        -5
+      ],
+      "max_exclusive": [
+        69,
+        -142,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        67,
+        -141,
+        -5
+      ],
+      "max_exclusive": [
+        68,
+        -137,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        68,
+        -144,
+        -5
+      ],
+      "max_exclusive": [
+        71,
+        -143,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        68,
+        -142,
+        -5
+      ],
+      "max_exclusive": [
+        70,
+        -140,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        68,
+        -139,
+        -5
+      ],
+      "max_exclusive": [
+        69,
+        -138,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        69,
+        -146,
+        -5
+      ],
+      "max_exclusive": [
+        70,
+        -144,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        69,
+        -140,
+        -5
+      ],
+      "max_exclusive": [
+        70,
+        -139,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        70,
+        -147,
+        -5
+      ],
+      "max_exclusive": [
+        72,
+        -146,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        70,
+        -145,
+        -5
+      ],
+      "max_exclusive": [
+        73,
+        -144,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        70,
+        -143,
+        -5
+      ],
+      "max_exclusive": [
+        72,
+        -141,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        71,
+        -146,
+        -5
+      ],
+      "max_exclusive": [
+        78,
+        -145,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        72,
+        -144,
+        -5
+      ],
+      "max_exclusive": [
+        73,
+        -143,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        73,
+        -151,
+        -5
+      ],
+      "max_exclusive": [
+        74,
+        -150,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        73,
+        -149,
+        -5
+      ],
+      "max_exclusive": [
+        78,
+        -148,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        73,
+        -147,
+        -5
+      ],
+      "max_exclusive": [
+        78,
+        -146,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        74,
+        -150,
+        -5
+      ],
+      "max_exclusive": [
+        78,
+        -149,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        74,
+        -145,
+        -5
+      ],
+      "max_exclusive": [
+        78,
+        -1,
+        25
+      ]
+    },
+    {
+      "min_inclusive": [
+        74,
+        3,
+        -5
+      ],
+      "max_exclusive": [
+        78,
+        149,
+        25
+      ]
+    }
+  ],
+  "max_axis_point_to_grid_center_m": 0.05,
+  "voxel_half_width_m": 0.05,
+  "source_point_to_solid_distance_m": 0,
+  "upper_bound_solid_point_to_nearest_source_point_per_axis_m": 0.1
+}
