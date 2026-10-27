@@ -36,10 +36,14 @@ add_library(fast_planner
 )
 target_link_libraries(fast_planner ${catkin_LIBRARIES} jsoncpp)
 
+add_executable(repair_contract_probe src/repair_contract_probe.cpp)
+target_link_libraries(repair_contract_probe fast_planner ${catkin_LIBRARIES} jsoncpp)
+
 add_executable(traj_server 
   src/traj_server.cpp
 )
 target_link_libraries(traj_server 
+  jsoncpp
   ${catkin_LIBRARIES} 
   -ldw 
   -lglog

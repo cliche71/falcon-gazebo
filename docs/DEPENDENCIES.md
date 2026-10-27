@@ -5,3 +5,5 @@ config/dependencies.json记录本机实际RotorS、mav_comm、Open3D上游URL、
 复建基础依赖：在新的工作区src中按JSON URL clone并checkout固定commit；RotorS需要mav_comm及Gazebo/ROS开发包，然后source /opt/ros/noetic/setup.bash并catkin_make。不要把已有主线或支撑devel在运行中替换。主线只构建tools/build.sh中的原白名单；可选RViz/PCD资源由固定commit URL及SHA获取，本地可靠归档也能恢复。
 
 原生办公室world、model和相机插件源码均跟踪在src/falcon_native，reference/scene_manifest.json保留场景来源与哈希。没有隐去唯一场景资源；不入Git的大PCD/GIF/源树预编译库有config/resources_manifest.json映射，可使用tools/fetch_optional_resources.py校验获取；它们不是当前原生办公室运行必需。
+
+v2/v3固定观察源码在support/observation，旧支撑Git提交6b9886a3966a4be497e3aa20e16cc139633193ff，实际已验证程序保留于../falcon_turn_observation_ws/devel。完整源码、相对RotorS的补丁和原构建脚本均可追溯，不只提供本机路径。构建新支撑可运行`bash tools/build_observation_support.sh /一个不存在的新目录`，随后按docs配置FALCON_OBSERVER_WS；本次没有执行该构建或替换控制/模型程序。libmav_msgs.so来自固定mav_comm underlay，成功试验实际在观察overlay中的同字节副本一并保留，具体SHA见归档RUNTIME_PROGRAM_IDENTITY.json。源码中的原版权说明保持。

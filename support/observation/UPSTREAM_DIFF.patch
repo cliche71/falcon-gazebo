@@ -1,0 +1,614 @@
+diff --git a/home/ljz/rotors_ws/src/rotors_simulator/rotors_control/include/rotors_control/lee_position_controller.h b/home/ljz/falcon_turn_observation_ws/src/rotors_control/include/rotors_control/lee_position_controller.h
+index 0d617ad..6f381d3 100644
+--- a/home/ljz/rotors_ws/src/rotors_simulator/rotors_control/include/rotors_control/lee_position_controller.h
++++ b/home/ljz/falcon_turn_observation_ws/src/rotors_control/include/rotors_control/lee_position_controller.h
+@@ -26,6 +26,10 @@
+ 
+ #include "rotors_control/common.h"
+ #include "rotors_control/parameters.h"
++// TURN_OBSERVATION_BEGIN
++#include "turn_observation/trace.h"
++// TURN_OBSERVATION_END
++
+ 
+ namespace rotors_control {
+ 
+@@ -54,6 +58,17 @@ class LeePositionControllerParameters {
+   RotorConfiguration rotor_configuration_;
+ };
+ 
++// TURN_OBSERVATION_BEGIN
++struct TurnObservation {
++ bool active=false;double copy_ns=0,thrust=0;
++ Eigen::Vector3d p=Eigen::Vector3d::Zero(),v=Eigen::Vector3d::Zero(),a=Eigen::Vector3d::Zero();double yaw=0,yaw_rate=0;
++ Eigen::Vector3d odom_p=Eigen::Vector3d::Zero(),odom_v=Eigen::Vector3d::Zero(),odom_w=Eigen::Vector3d::Zero();Eigen::Vector4d odom_q=Eigen::Vector4d::Zero();
++ Eigen::Vector3d pos_error=Eigen::Vector3d::Zero(),vel_error=Eigen::Vector3d::Zero(),accel=Eigen::Vector3d::Zero(),angle_error=Eigen::Vector3d::Zero(),w_des=Eigen::Vector3d::Zero(),w_error=Eigen::Vector3d::Zero(),angular_acc=Eigen::Vector3d::Zero();
++ Eigen::Matrix3d R_des=Eigen::Matrix3d::Identity(),R=Eigen::Matrix3d::Identity();
++ Eigen::Vector3d requested_torque=Eigen::Vector3d::Zero();Eigen::VectorXd squared_raw,squared_clamped,motor_target;
++};
++// TURN_OBSERVATION_END
++
+ class LeePositionController {
+  public:
+   LeePositionController();
+@@ -65,11 +80,17 @@ class LeePositionController {
+   void SetTrajectoryPoint(
+     const mav_msgs::EigenTrajectoryPoint& command_trajectory);
+ 
++// TURN_OBSERVATION_BEGIN
++  const TurnObservation& GetTurnObservation() const{return turn_observation_;}
++// TURN_OBSERVATION_END
+   LeePositionControllerParameters controller_parameters_;
+   VehicleParameters vehicle_parameters_;
+ 
+   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  private:
++// TURN_OBSERVATION_BEGIN
++  mutable TurnObservation turn_observation_;
++// TURN_OBSERVATION_END
+   bool initialized_params_;
+   bool controller_active_;
+ 
+diff --git a/home/ljz/falcon_turn_observation_ws/src/rotors_control/include/turn_observation/trace.h b/home/ljz/falcon_turn_observation_ws/src/rotors_control/include/turn_observation/trace.h
+new file mode 100644
+index 0000000..ad86ec7
+--- /dev/null
++++ b/home/ljz/falcon_turn_observation_ws/src/rotors_control/include/turn_observation/trace.h
+@@ -0,0 +1,56 @@
++#pragma once
++#include <array>
++#include <atomic>
++#include <chrono>
++#include <condition_variable>
++#include <cstdlib>
++#include <deque>
++#include <fstream>
++#include <iomanip>
++#include <mutex>
++#include <memory>
++#include <cstdint>
++#include <string>
++#include <thread>
++#include <unistd.h>
++namespace turn_observation {
++inline double mono(){return std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch()).count();}
++inline double wall(){return std::chrono::duration<double>(std::chrono::system_clock::now().time_since_epoch()).count();}
++inline bool enabled(){static const bool value=std::getenv("FALCON_TURN_TRACE_DIR")!=nullptr;return value;}
++inline double tap(double value,double& copy){copy=value;return value;}
++struct Packet{
++ int kind=0,n=0;unsigned long long seq=0;double monotonic=0,wall_time=0,sim=0;std::array<double,128> d{};
++ void add(double v){if(n<int(d.size()))d[n++]=v;}
++ template<class V> void vec(const V& v){for(int i=0;i<v.size();++i)add(v(i));}
++ template<class M> void mat(const M& m){for(int i=0;i<m.rows();++i)for(int j=0;j<m.cols();++j)add(m(i,j));}
++};
++class Sink{
++ static const size_t capacity_=8192;
++ struct Cell{std::atomic<size_t> sequence;Packet packet;};
++ std::unique_ptr<Cell[]> ring_;std::atomic<size_t> enqueue_pos_{0};size_t dequeue_pos_=0;
++ std::thread worker_;std::atomic<bool> done_{false};std::ofstream out_;
++ std::string path_;std::atomic<unsigned long long> submitted_{0},written_{0},dropped_{0},errors_{0},enqueue_ns_{0},enqueue_max_ns_{0};
++ bool enqueue(const Packet& p){size_t pos=enqueue_pos_.load(std::memory_order_relaxed);Cell* cell;
++  for(;;){cell=&ring_[pos%capacity_];size_t seq=cell->sequence.load(std::memory_order_acquire);intptr_t dif=static_cast<intptr_t>(seq)-static_cast<intptr_t>(pos);
++   if(dif==0){if(enqueue_pos_.compare_exchange_weak(pos,pos+1,std::memory_order_relaxed))break;}
++   else if(dif<0)return false;else pos=enqueue_pos_.load(std::memory_order_relaxed);}
++  cell->packet=p;cell->sequence.store(pos+1,std::memory_order_release);return true;}
++ bool dequeue(Packet& p){Cell& cell=ring_[dequeue_pos_%capacity_];size_t seq=cell.sequence.load(std::memory_order_acquire);
++  if(static_cast<intptr_t>(seq)-static_cast<intptr_t>(dequeue_pos_+1)!=0)return false;
++  p=cell.packet;cell.sequence.store(dequeue_pos_+capacity_,std::memory_order_release);++dequeue_pos_;return true;}
++ void stats(){std::ofstream f(path_+".stats.tmp");f<<"{\"submitted\":"<<submitted_<<",\"written\":"<<written_<<",\"dropped\":"<<dropped_<<",\"write_errors\":"<<errors_<<",\"enqueue_ns_sum\":"<<enqueue_ns_<<",\"enqueue_ns_max\":"<<enqueue_max_ns_<<"}";f.close();std::rename((path_+".stats.tmp").c_str(),(path_+".stats.json").c_str());}
++ void run(){double last_stats=mono(),last_flush=mono();for(;;){Packet p;bool any=false;
++  while(dequeue(p)){any=true;out_<<p.kind<<','<<p.seq<<','<<std::setprecision(17)<<p.monotonic<<','<<p.wall_time<<','<<p.sim<<','<<p.n;for(int i=0;i<p.n;++i)out_<<','<<p.d[i];out_<<'\n';++written_;if(!out_)++errors_;}
++  if(mono()-last_flush>=.1){out_.flush();last_flush=mono();}
++  if(mono()-last_stats>=.5){stats();last_stats=mono();}
++  if(done_.load()&&written_.load()+dropped_.load()==submitted_.load())break;
++  if(!any)std::this_thread::sleep_for(std::chrono::milliseconds(1));}
++  out_.flush();stats();}
++ public:
++ explicit Sink(const std::string& name){if(!enabled())return;ring_.reset(new Cell[capacity_]);for(size_t i=0;i<capacity_;++i)ring_[i].sequence.store(i,std::memory_order_relaxed);
++  path_=std::string(std::getenv("FALCON_TURN_TRACE_DIR"))+"/"+name;out_.open(path_+".csv",std::ios::out|std::ios::trunc);out_<<"kind,sequence,monotonic,wall,processing_sim,field_count,fields...\n";if(!out_)++errors_;worker_=std::thread([this]{run();});}
++ ~Sink(){if(!worker_.joinable())return;done_.store(true);worker_.join();}
++ void submit(const Packet& p){if(!enabled())return;double start=mono();++submitted_;if(!enqueue(p))++dropped_;
++  auto ns=static_cast<unsigned long long>((mono()-start)*1e9);enqueue_ns_+=ns;auto old=enqueue_max_ns_.load();while(old<ns&&!enqueue_max_ns_.compare_exchange_weak(old,ns)){} }
++};
++}
+diff --git a/home/ljz/rotors_ws/src/rotors_simulator/rotors_control/src/library/lee_position_controller.cpp b/home/ljz/falcon_turn_observation_ws/src/rotors_control/src/library/lee_position_controller.cpp
+index 967f36e..d3df6ad 100644
+--- a/home/ljz/rotors_ws/src/rotors_simulator/rotors_control/src/library/lee_position_controller.cpp
++++ b/home/ljz/falcon_turn_observation_ws/src/rotors_control/src/library/lee_position_controller.cpp
+@@ -56,6 +56,9 @@ void LeePositionController::CalculateRotorVelocities(Eigen::VectorXd* rotor_velo
+   assert(rotor_velocities);
+   assert(initialized_params_);
+ 
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){turn_observation_.copy_ns=0;turn_observation_.active=controller_active_;}
++// TURN_OBSERVATION_END
+   rotor_velocities->resize(vehicle_parameters_.rotor_configuration_.rotors.size());
+   // Return 0 velocities on all rotors, until the first command is received.
+   if (!controller_active_) {
+@@ -63,6 +66,13 @@ void LeePositionController::CalculateRotorVelocities(Eigen::VectorXd* rotor_velo
+     return;
+   }
+ 
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){const double turn_begin=turn_observation::mono();
++  turn_observation_.p=command_trajectory_.position_W;turn_observation_.v=command_trajectory_.velocity_W;turn_observation_.a=command_trajectory_.acceleration_W;
++  turn_observation_.yaw=command_trajectory_.getYaw();turn_observation_.yaw_rate=command_trajectory_.getYawRate();
++  turn_observation_.odom_p=odometry_.position;turn_observation_.odom_v=odometry_.velocity;turn_observation_.odom_w=odometry_.angular_velocity;turn_observation_.odom_q=odometry_.orientation.coeffs();
++  turn_observation_.copy_ns+=(turn_observation::mono()-turn_begin)*1e9;}
++// TURN_OBSERVATION_END
+   Eigen::Vector3d acceleration;
+   ComputeDesiredAcceleration(&acceleration);
+ 
+@@ -77,8 +87,26 @@ void LeePositionController::CalculateRotorVelocities(Eigen::VectorXd* rotor_velo
+   angular_acceleration_thrust(3) = thrust;
+ 
+   *rotor_velocities = angular_acc_to_rotor_velocities_ * angular_acceleration_thrust;
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){const double turn_begin=turn_observation::mono();
++  turn_observation_.thrust=thrust;turn_observation_.requested_torque=vehicle_parameters_.inertia_*angular_acceleration;turn_observation_.squared_raw=*rotor_velocities;
++  turn_observation_.copy_ns+=(turn_observation::mono()-turn_begin)*1e9;}
++// TURN_OBSERVATION_END
++
+   *rotor_velocities = rotor_velocities->cwiseMax(Eigen::VectorXd::Zero(rotor_velocities->rows()));
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){const double turn_begin=turn_observation::mono();
++  turn_observation_.squared_clamped=*rotor_velocities;
++  turn_observation_.copy_ns+=(turn_observation::mono()-turn_begin)*1e9;}
++// TURN_OBSERVATION_END
++
+   *rotor_velocities = rotor_velocities->cwiseSqrt();
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){const double turn_begin=turn_observation::mono();
++  turn_observation_.motor_target=*rotor_velocities;
++  turn_observation_.copy_ns+=(turn_observation::mono()-turn_begin)*1e9;}
++// TURN_OBSERVATION_END
++
+ }
+ 
+ void LeePositionController::SetOdometry(const EigenOdometry& odometry) {
+@@ -108,6 +136,12 @@ void LeePositionController::ComputeDesiredAcceleration(Eigen::Vector3d* accelera
+   *acceleration = (position_error.cwiseProduct(controller_parameters_.position_gain_)
+       + velocity_error.cwiseProduct(controller_parameters_.velocity_gain_)) / vehicle_parameters_.mass_
+       - vehicle_parameters_.gravity_ * e_3 - command_trajectory_.acceleration_W;
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){const double turn_begin=turn_observation::mono();
++  turn_observation_.pos_error=position_error;turn_observation_.vel_error=velocity_error;turn_observation_.accel=*acceleration;
++  turn_observation_.copy_ns+=(turn_observation::mono()-turn_begin)*1e9;}
++// TURN_OBSERVATION_END
++
+ }
+ 
+ // Implementation from the T. Lee et al. paper
+@@ -134,6 +168,12 @@ void LeePositionController::ComputeDesiredAngularAcc(const Eigen::Vector3d& acce
+   R_des.col(0) = b2_des.cross(b3_des);
+   R_des.col(1) = b2_des;
+   R_des.col(2) = b3_des;
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){const double turn_begin=turn_observation::mono();
++  turn_observation_.R=R;turn_observation_.R_des=R_des;
++  turn_observation_.copy_ns+=(turn_observation::mono()-turn_begin)*1e9;}
++// TURN_OBSERVATION_END
++
+ 
+   // Angle error according to lee et al.
+   Eigen::Matrix3d angle_error_matrix = 0.5 * (R_des.transpose() * R - R.transpose() * R_des);
+@@ -149,5 +189,11 @@ void LeePositionController::ComputeDesiredAngularAcc(const Eigen::Vector3d& acce
+   *angular_acceleration = -1 * angle_error.cwiseProduct(normalized_attitude_gain_)
+                            - angular_rate_error.cwiseProduct(normalized_angular_rate_gain_)
+                            + odometry_.angular_velocity.cross(odometry_.angular_velocity); // we don't need the inertia matrix here
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){const double turn_begin=turn_observation::mono();
++  turn_observation_.angle_error=angle_error;turn_observation_.w_des=angular_rate_des;turn_observation_.w_error=angular_rate_error;turn_observation_.angular_acc=*angular_acceleration;
++  turn_observation_.copy_ns+=(turn_observation::mono()-turn_begin)*1e9;}
++// TURN_OBSERVATION_END
++
+ }
+ }
+diff --git a/home/ljz/rotors_ws/src/rotors_simulator/rotors_control/src/nodes/lee_position_controller_node.cpp b/home/ljz/falcon_turn_observation_ws/src/rotors_control/src/nodes/lee_position_controller_node.cpp
+index de7c072..6098bae 100644
+--- a/home/ljz/rotors_ws/src/rotors_simulator/rotors_control/src/nodes/lee_position_controller_node.cpp
++++ b/home/ljz/falcon_turn_observation_ws/src/rotors_control/src/nodes/lee_position_controller_node.cpp
+@@ -26,6 +26,10 @@
+ #include "rotors_control/parameters_ros.h"
+ 
+ namespace rotors_control {
++// TURN_OBSERVATION_BEGIN
++static turn_observation::Sink& turn_node_sink(){static turn_observation::Sink sink("controller");return sink;}
++// TURN_OBSERVATION_END
++
+ 
+ LeePositionControllerNode::LeePositionControllerNode(
+   const ros::NodeHandle& nh, const ros::NodeHandle& private_nh)
+@@ -100,6 +104,10 @@ void LeePositionControllerNode::Publish() {
+ 
+ void LeePositionControllerNode::CommandPoseCallback(
+     const geometry_msgs::PoseStampedConstPtr& pose_msg) {
++// TURN_OBSERVATION_BEGIN
++  const double turn_receipt_mono=turn_observation::mono(),turn_receipt_ros=ros::Time::now().toSec();
++// TURN_OBSERVATION_END
++
+   // Clear all pending commands.
+   command_timer_.stop();
+   commands_.clear();
+@@ -110,11 +118,24 @@ void LeePositionControllerNode::CommandPoseCallback(
+   commands_.push_front(eigen_reference);
+ 
+   lee_position_controller_.SetTrajectoryPoint(commands_.front());
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){++turn_reference_seq_;turn_reference_stamp_=pose_msg->header.stamp.toSec();turn_reference_receipt_mono_=turn_receipt_mono;turn_reference_receipt_ros_=turn_receipt_ros;turn_reference_kind_=2;turn_point_index_=0;turn_reference_selected_mono_=turn_observation::mono();turn_reference_selected_ros_=ros::Time::now().toSec();}
++// TURN_OBSERVATION_END
++
+   commands_.pop_front();
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){turn_observation::Packet p;p.kind=2;p.seq=turn_reference_seq_;p.monotonic=turn_observation::mono();p.wall_time=turn_observation::wall();p.sim=ros::Time::now().toSec();
++  p.add(turn_reference_stamp_);p.add(turn_reference_receipt_mono_);p.add(turn_reference_receipt_ros_);p.add(turn_reference_selected_mono_);p.add(turn_reference_selected_ros_);p.add(turn_reference_kind_);p.add(turn_point_index_);turn_node_sink().submit(p);}
++// TURN_OBSERVATION_END
++
+ }
+ 
+ void LeePositionControllerNode::MultiDofJointTrajectoryCallback(
+     const trajectory_msgs::MultiDOFJointTrajectoryConstPtr& msg) {
++// TURN_OBSERVATION_BEGIN
++  const double turn_receipt_mono=turn_observation::mono(),turn_receipt_ros=ros::Time::now().toSec();
++// TURN_OBSERVATION_END
++
+   // Clear all pending commands.
+   command_timer_.stop();
+   commands_.clear();
+@@ -143,6 +164,10 @@ void LeePositionControllerNode::MultiDofJointTrajectoryCallback(
+ 
+   // We can trigger the first command immediately.
+   lee_position_controller_.SetTrajectoryPoint(commands_.front());
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){++turn_reference_seq_;turn_reference_stamp_=msg->header.stamp.toSec();turn_reference_receipt_mono_=turn_receipt_mono;turn_reference_receipt_ros_=turn_receipt_ros;turn_reference_kind_=1;turn_point_index_=0;turn_reference_selected_mono_=turn_observation::mono();turn_reference_selected_ros_=ros::Time::now().toSec();}
++// TURN_OBSERVATION_END
++
+   commands_.pop_front();
+ 
+   if (n_commands > 1) {
+@@ -150,6 +175,11 @@ void LeePositionControllerNode::MultiDofJointTrajectoryCallback(
+     command_waiting_times_.pop_front();
+     command_timer_.start();
+   }
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){turn_observation::Packet p;p.kind=2;p.seq=turn_reference_seq_;p.monotonic=turn_observation::mono();p.wall_time=turn_observation::wall();p.sim=ros::Time::now().toSec();
++  p.add(turn_reference_stamp_);p.add(turn_reference_receipt_mono_);p.add(turn_reference_receipt_ros_);p.add(turn_reference_selected_mono_);p.add(turn_reference_selected_ros_);p.add(turn_reference_kind_);p.add(turn_point_index_);turn_node_sink().submit(p);}
++// TURN_OBSERVATION_END
++
+ }
+ 
+ void LeePositionControllerNode::TimedCommandCallback(const ros::TimerEvent& e) {
+@@ -161,6 +191,10 @@ void LeePositionControllerNode::TimedCommandCallback(const ros::TimerEvent& e) {
+ 
+   const mav_msgs::EigenTrajectoryPoint eigen_reference = commands_.front();
+   lee_position_controller_.SetTrajectoryPoint(commands_.front());
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){++turn_point_index_;turn_reference_selected_mono_=turn_observation::mono();turn_reference_selected_ros_=ros::Time::now().toSec();}
++// TURN_OBSERVATION_END
++
+   commands_.pop_front();
+   command_timer_.stop();
+   if(!command_waiting_times_.empty()){
+@@ -168,9 +202,18 @@ void LeePositionControllerNode::TimedCommandCallback(const ros::TimerEvent& e) {
+     command_waiting_times_.pop_front();
+     command_timer_.start();
+   }
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){turn_observation::Packet p;p.kind=2;p.seq=turn_reference_seq_;p.monotonic=turn_observation::mono();p.wall_time=turn_observation::wall();p.sim=ros::Time::now().toSec();
++  p.add(turn_reference_stamp_);p.add(turn_reference_receipt_mono_);p.add(turn_reference_receipt_ros_);p.add(turn_reference_selected_mono_);p.add(turn_reference_selected_ros_);p.add(turn_reference_kind_);p.add(turn_point_index_);turn_node_sink().submit(p);}
++// TURN_OBSERVATION_END
++
+ }
+ 
+ void LeePositionControllerNode::OdometryCallback(const nav_msgs::OdometryConstPtr& odometry_msg) {
++// TURN_OBSERVATION_BEGIN
++  const double turn_callback_mono=turn_observation::mono(),turn_callback_ros=ros::Time::now().toSec();
++// TURN_OBSERVATION_END
++
+ 
+   ROS_INFO_ONCE("LeePositionController got first odometry message.");
+ 
+@@ -179,7 +222,14 @@ void LeePositionControllerNode::OdometryCallback(const nav_msgs::OdometryConstPt
+   lee_position_controller_.SetOdometry(odometry);
+ 
+   Eigen::VectorXd ref_rotor_velocities;
++// TURN_OBSERVATION_BEGIN
++  const double turn_compute_begin=turn_observation::mono();
++// TURN_OBSERVATION_END
+   lee_position_controller_.CalculateRotorVelocities(&ref_rotor_velocities);
++// TURN_OBSERVATION_BEGIN
++  const double turn_compute_end=turn_observation::mono();
++// TURN_OBSERVATION_END
++
+ 
+   // Todo(ffurrer): Do this in the conversions header.
+   mav_msgs::ActuatorsPtr actuator_msg(new mav_msgs::Actuators);
+@@ -190,6 +240,17 @@ void LeePositionControllerNode::OdometryCallback(const nav_msgs::OdometryConstPt
+   actuator_msg->header.stamp = odometry_msg->header.stamp;
+ 
+   motor_velocity_reference_pub_.publish(actuator_msg);
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){
++  const double turn_capture_begin=turn_observation::mono();const auto& t=lee_position_controller_.GetTurnObservation();turn_observation::Packet p;p.kind=1;p.seq=++turn_compute_seq_;p.monotonic=turn_callback_mono;p.wall_time=turn_observation::wall();p.sim=turn_callback_ros;
++  p.add(turn_reference_seq_);p.add(turn_reference_stamp_);p.add(turn_reference_receipt_mono_);p.add(turn_reference_receipt_ros_);p.add(turn_reference_selected_mono_);p.add(turn_reference_selected_ros_);p.add(turn_reference_kind_);p.add(turn_point_index_);
++  p.add(odometry_msg->header.stamp.toSec());p.add(odometry_msg->header.seq);p.add(turn_compute_begin);p.add(turn_compute_end);p.add(t.active);
++  p.vec(t.p);p.vec(t.v);p.vec(t.a);p.add(t.yaw);p.add(t.yaw_rate);p.vec(t.odom_p);p.vec(t.odom_q);p.vec(t.odom_v);p.vec(t.odom_w);
++  p.vec(t.accel);p.mat(t.R_des);p.mat(t.R);p.vec(t.pos_error);p.vec(t.vel_error);p.vec(t.angle_error);p.vec(t.w_des);p.vec(t.w_error);p.vec(t.angular_acc);p.add(t.thrust);p.vec(t.requested_torque);
++  p.add(t.motor_target.size());p.vec(t.squared_raw);p.vec(t.squared_clamped);p.vec(t.motor_target);p.add(t.copy_ns);p.add((turn_observation::mono()-turn_capture_begin)*1e9);
++  turn_node_sink().submit(p);}
++// TURN_OBSERVATION_END
++
+ }
+ 
+ }
+diff --git a/home/ljz/rotors_ws/src/rotors_simulator/rotors_control/src/nodes/lee_position_controller_node.h b/home/ljz/falcon_turn_observation_ws/src/rotors_control/src/nodes/lee_position_controller_node.h
+index 9afbcc8..6139f95 100644
+--- a/home/ljz/rotors_ws/src/rotors_simulator/rotors_control/src/nodes/lee_position_controller_node.h
++++ b/home/ljz/falcon_turn_observation_ws/src/rotors_control/src/nodes/lee_position_controller_node.h
+@@ -48,6 +48,10 @@ class LeePositionControllerNode {
+   void Publish();
+ 
+  private:
++// TURN_OBSERVATION_BEGIN
++  unsigned long long turn_reference_seq_=0,turn_compute_seq_=0;double turn_reference_stamp_=0,turn_reference_receipt_mono_=0,turn_reference_receipt_ros_=0,turn_reference_selected_mono_=0,turn_reference_selected_ros_=0;
++  int turn_reference_kind_=0,turn_point_index_=0;
++// TURN_OBSERVATION_END
+   ros::NodeHandle nh_;
+   ros::NodeHandle private_nh_;
+ 
+diff --git a/home/ljz/rotors_ws/src/rotors_simulator/rotors_gazebo_plugins/include/rotors_gazebo_plugins/gazebo_motor_model.h b/home/ljz/falcon_turn_observation_ws/src/rotors_gazebo_plugins/include/rotors_gazebo_plugins/gazebo_motor_model.h
+index e2c6691..e751b1a 100644
+--- a/home/ljz/rotors_ws/src/rotors_simulator/rotors_gazebo_plugins/include/rotors_gazebo_plugins/gazebo_motor_model.h
++++ b/home/ljz/falcon_turn_observation_ws/src/rotors_gazebo_plugins/include/rotors_gazebo_plugins/gazebo_motor_model.h
+@@ -38,6 +38,10 @@
+ // USER
+ #include "rotors_gazebo_plugins/common.h"
+ #include "rotors_gazebo_plugins/motor_model.hpp"
++// TURN_OBSERVATION_BEGIN
++#include "turn_observation/trace.h"
++// TURN_OBSERVATION_END
++
+ #include "Float32.pb.h"
+ #include "CommandMotorSpeed.pb.h"
+ #include "WindSpeed.pb.h"
+@@ -113,6 +117,10 @@ class GazeboMotorModel : public MotorModel, public ModelPlugin {
+  private:
+   /// \brief    Flag that is set to true once CreatePubsAndSubs() is called, used
+   ///           to prevent CreatePubsAndSubs() from be called on every OnUpdate().
++// TURN_OBSERVATION_BEGIN
++  std::atomic<unsigned long long> turn_receive_seq_{0};unsigned long long turn_update_seq_=0;
++  double turn_diag_input_=0,turn_diag_filtered_=0,turn_diag_thrust_=0,turn_diag_real_speed_=0;ignition::math::Vector3d turn_diag_torque_,turn_diag_rolling_,turn_diag_drag_;
++// TURN_OBSERVATION_END
+   bool pubs_and_subs_created_;
+ 
+   /// \brief    Creates all required publishers and subscribers, incl. routing of messages to/from ROS if required.
+diff --git a/home/ljz/falcon_turn_observation_ws/src/rotors_gazebo_plugins/include/turn_observation/trace.h b/home/ljz/falcon_turn_observation_ws/src/rotors_gazebo_plugins/include/turn_observation/trace.h
+new file mode 100644
+index 0000000..ad86ec7
+--- /dev/null
++++ b/home/ljz/falcon_turn_observation_ws/src/rotors_gazebo_plugins/include/turn_observation/trace.h
+@@ -0,0 +1,56 @@
++#pragma once
++#include <array>
++#include <atomic>
++#include <chrono>
++#include <condition_variable>
++#include <cstdlib>
++#include <deque>
++#include <fstream>
++#include <iomanip>
++#include <mutex>
++#include <memory>
++#include <cstdint>
++#include <string>
++#include <thread>
++#include <unistd.h>
++namespace turn_observation {
++inline double mono(){return std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch()).count();}
++inline double wall(){return std::chrono::duration<double>(std::chrono::system_clock::now().time_since_epoch()).count();}
++inline bool enabled(){static const bool value=std::getenv("FALCON_TURN_TRACE_DIR")!=nullptr;return value;}
++inline double tap(double value,double& copy){copy=value;return value;}
++struct Packet{
++ int kind=0,n=0;unsigned long long seq=0;double monotonic=0,wall_time=0,sim=0;std::array<double,128> d{};
++ void add(double v){if(n<int(d.size()))d[n++]=v;}
++ template<class V> void vec(const V& v){for(int i=0;i<v.size();++i)add(v(i));}
++ template<class M> void mat(const M& m){for(int i=0;i<m.rows();++i)for(int j=0;j<m.cols();++j)add(m(i,j));}
++};
++class Sink{
++ static const size_t capacity_=8192;
++ struct Cell{std::atomic<size_t> sequence;Packet packet;};
++ std::unique_ptr<Cell[]> ring_;std::atomic<size_t> enqueue_pos_{0};size_t dequeue_pos_=0;
++ std::thread worker_;std::atomic<bool> done_{false};std::ofstream out_;
++ std::string path_;std::atomic<unsigned long long> submitted_{0},written_{0},dropped_{0},errors_{0},enqueue_ns_{0},enqueue_max_ns_{0};
++ bool enqueue(const Packet& p){size_t pos=enqueue_pos_.load(std::memory_order_relaxed);Cell* cell;
++  for(;;){cell=&ring_[pos%capacity_];size_t seq=cell->sequence.load(std::memory_order_acquire);intptr_t dif=static_cast<intptr_t>(seq)-static_cast<intptr_t>(pos);
++   if(dif==0){if(enqueue_pos_.compare_exchange_weak(pos,pos+1,std::memory_order_relaxed))break;}
++   else if(dif<0)return false;else pos=enqueue_pos_.load(std::memory_order_relaxed);}
++  cell->packet=p;cell->sequence.store(pos+1,std::memory_order_release);return true;}
++ bool dequeue(Packet& p){Cell& cell=ring_[dequeue_pos_%capacity_];size_t seq=cell.sequence.load(std::memory_order_acquire);
++  if(static_cast<intptr_t>(seq)-static_cast<intptr_t>(dequeue_pos_+1)!=0)return false;
++  p=cell.packet;cell.sequence.store(dequeue_pos_+capacity_,std::memory_order_release);++dequeue_pos_;return true;}
++ void stats(){std::ofstream f(path_+".stats.tmp");f<<"{\"submitted\":"<<submitted_<<",\"written\":"<<written_<<",\"dropped\":"<<dropped_<<",\"write_errors\":"<<errors_<<",\"enqueue_ns_sum\":"<<enqueue_ns_<<",\"enqueue_ns_max\":"<<enqueue_max_ns_<<"}";f.close();std::rename((path_+".stats.tmp").c_str(),(path_+".stats.json").c_str());}
++ void run(){double last_stats=mono(),last_flush=mono();for(;;){Packet p;bool any=false;
++  while(dequeue(p)){any=true;out_<<p.kind<<','<<p.seq<<','<<std::setprecision(17)<<p.monotonic<<','<<p.wall_time<<','<<p.sim<<','<<p.n;for(int i=0;i<p.n;++i)out_<<','<<p.d[i];out_<<'\n';++written_;if(!out_)++errors_;}
++  if(mono()-last_flush>=.1){out_.flush();last_flush=mono();}
++  if(mono()-last_stats>=.5){stats();last_stats=mono();}
++  if(done_.load()&&written_.load()+dropped_.load()==submitted_.load())break;
++  if(!any)std::this_thread::sleep_for(std::chrono::milliseconds(1));}
++  out_.flush();stats();}
++ public:
++ explicit Sink(const std::string& name){if(!enabled())return;ring_.reset(new Cell[capacity_]);for(size_t i=0;i<capacity_;++i)ring_[i].sequence.store(i,std::memory_order_relaxed);
++  path_=std::string(std::getenv("FALCON_TURN_TRACE_DIR"))+"/"+name;out_.open(path_+".csv",std::ios::out|std::ios::trunc);out_<<"kind,sequence,monotonic,wall,processing_sim,field_count,fields...\n";if(!out_)++errors_;worker_=std::thread([this]{run();});}
++ ~Sink(){if(!worker_.joinable())return;done_.store(true);worker_.join();}
++ void submit(const Packet& p){if(!enabled())return;double start=mono();++submitted_;if(!enqueue(p))++dropped_;
++  auto ns=static_cast<unsigned long long>((mono()-start)*1e9);enqueue_ns_+=ns;auto old=enqueue_max_ns_.load();while(old<ns&&!enqueue_max_ns_.compare_exchange_weak(old,ns)){} }
++};
++}
+diff --git a/home/ljz/rotors_ws/src/rotors_simulator/rotors_gazebo_plugins/src/gazebo_motor_model.cpp b/home/ljz/falcon_turn_observation_ws/src/rotors_gazebo_plugins/src/gazebo_motor_model.cpp
+index 2b4fa14..d5a795f 100644
+--- a/home/ljz/rotors_ws/src/rotors_simulator/rotors_gazebo_plugins/src/gazebo_motor_model.cpp
++++ b/home/ljz/falcon_turn_observation_ws/src/rotors_gazebo_plugins/src/gazebo_motor_model.cpp
+@@ -25,6 +25,10 @@
+ #include "ConnectRosToGazeboTopic.pb.h"
+ 
+ namespace gazebo {
++// TURN_OBSERVATION_BEGIN
++static turn_observation::Sink& turn_motor_sink(){static turn_observation::Sink sink("motor");return sink;}
++// TURN_OBSERVATION_END
++
+ 
+ GazeboMotorModel::~GazeboMotorModel() {
+ }
+@@ -210,6 +214,10 @@ void GazeboMotorModel::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf) {
+ 
+ // This gets called by the world update start event.
+ void GazeboMotorModel::OnUpdate(const common::UpdateInfo& _info) {
++// TURN_OBSERVATION_BEGIN
++  const double turn_update_mono=turn_observation::mono();const auto turn_seq_before=turn_receive_seq_.load();
++// TURN_OBSERVATION_END
++
+   if (kPrintOnUpdates) {
+     gzdbg << __FUNCTION__ << "() called." << std::endl;
+   }
+@@ -221,8 +229,20 @@ void GazeboMotorModel::OnUpdate(const common::UpdateInfo& _info) {
+ 
+   sampling_time_ = _info.simTime.Double() - prev_sim_time_;
+   prev_sim_time_ = _info.simTime.Double();
++// TURN_OBSERVATION_BEGIN
++  const double turn_core_begin=turn_observation::mono();
++// TURN_OBSERVATION_END
+   UpdateForcesAndMoments();
++// TURN_OBSERVATION_BEGIN
++  const double turn_core_end=turn_observation::mono();
++// TURN_OBSERVATION_END
++
+   Publish();
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){const double begin=turn_observation::mono();turn_observation::Packet p;p.kind=4;p.seq=++turn_update_seq_;p.monotonic=turn_update_mono;p.wall_time=turn_observation::wall();p.sim=_info.simTime.Double();
++  p.add(motor_number_);p.add(static_cast<int>(motor_type_));p.add(turn_seq_before);p.add(turn_receive_seq_.load());p.add(sampling_time_);p.add(turn_diag_input_);p.add(turn_diag_filtered_);p.add(turning_direction_*turn_diag_filtered_/rotor_velocity_slowdown_sim_);p.add(motor_rot_vel_);p.add(turn_diag_real_speed_);p.add(turn_diag_thrust_);p.add(turn_diag_torque_.X());p.add(turn_diag_torque_.Y());p.add(turn_diag_torque_.Z());p.add(turn_diag_rolling_.X());p.add(turn_diag_rolling_.Y());p.add(turn_diag_rolling_.Z());p.add(turn_diag_drag_.X());p.add(turn_diag_drag_.Y());p.add(turn_diag_drag_.Z());p.add(max_rot_velocity_);p.add(time_constant_up_);p.add(time_constant_down_);p.add(rotor_velocity_slowdown_sim_);p.add(motor_constant_);p.add(moment_constant_);p.add(turning_direction_);p.add(turn_core_begin);p.add(turn_core_end);p.add((turn_observation::mono()-begin)*1e9);turn_motor_sink().submit(p);}
++// TURN_OBSERVATION_END
++
+ }
+ 
+ void GazeboMotorModel::CreatePubsAndSubs() {
+@@ -331,6 +351,10 @@ void GazeboMotorModel::CreatePubsAndSubs() {
+ 
+ void GazeboMotorModel::ControlCommandCallback(
+     GzCommandMotorInputMsgPtr& command_motor_input_msg) {
++// TURN_OBSERVATION_BEGIN
++  const double turn_receipt_mono=turn_observation::mono(),turn_receipt_sim=model_->GetWorld()->SimTime().Double();
++// TURN_OBSERVATION_END
++
+   if (kPrintOnMsgCallback) {
+     gzdbg << __FUNCTION__ << "() called." << std::endl;
+   }
+@@ -354,6 +378,11 @@ void GazeboMotorModel::ControlCommandCallback(
+             command_motor_input_msg->motor_speed(motor_number_)),
+         static_cast<double>(max_force_));
+   }
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){turn_observation::Packet p;p.kind=3;p.seq=++turn_receive_seq_;p.monotonic=turn_receipt_mono;p.wall_time=turn_observation::wall();p.sim=turn_receipt_sim;
++  p.add(motor_number_);p.add(static_cast<int>(motor_type_));p.add(ref_motor_input_);p.add(max_rot_velocity_);p.add(command_motor_input_msg->motor_speed_size());for(int i=0;i<command_motor_input_msg->motor_speed_size();++i)p.add(command_motor_input_msg->motor_speed(i));p.add(turn_observation::mono());turn_motor_sink().submit(p);}
++// TURN_OBSERVATION_END
++
+ }
+ 
+ void GazeboMotorModel::WindSpeedCallback(GzWindSpeedMsgPtr& wind_speed_msg) {
+@@ -422,6 +451,10 @@ void GazeboMotorModel::UpdateForcesAndMoments() {
+       }
+       double real_motor_velocity =
+           motor_rot_vel_ * rotor_velocity_slowdown_sim_;
++// TURN_OBSERVATION_BEGIN
++      if(turn_observation::enabled())turn_diag_real_speed_=real_motor_velocity;
++// TURN_OBSERVATION_END
++
+       // Get the direction of the rotor rotation.
+       int real_motor_velocity_sign =
+           (real_motor_velocity > 0) - (real_motor_velocity < 0);
+@@ -429,6 +462,10 @@ void GazeboMotorModel::UpdateForcesAndMoments() {
+       double thrust = turning_direction_ * real_motor_velocity_sign *
+                       real_motor_velocity * real_motor_velocity *
+                       motor_constant_;
++// TURN_OBSERVATION_BEGIN
++      if(turn_observation::enabled())turn_diag_thrust_=thrust;
++// TURN_OBSERVATION_END
++
+ 
+       // Apply a force to the link.
+       link_->AddRelativeForce(ignition::math::Vector3d (0, 0, thrust));
+@@ -462,6 +499,10 @@ void GazeboMotorModel::UpdateForcesAndMoments() {
+       ignition::math::Vector3d drag_torque_parent_frame =
+           pose_difference.Rot().RotateVector(drag_torque);
+       parent_links.at(0)->AddRelativeTorque(drag_torque_parent_frame);
++// TURN_OBSERVATION_BEGIN
++      if(turn_observation::enabled())turn_diag_torque_=drag_torque_parent_frame;
++// TURN_OBSERVATION_END
++
+ 
+       ignition::math::Vector3d rolling_moment;
+       // - \omega * \mu_1 * V_A^{\perp}
+@@ -469,10 +510,14 @@ void GazeboMotorModel::UpdateForcesAndMoments() {
+                        rolling_moment_coefficient_ *
+                        body_velocity_perpendicular;
+       parent_links.at(0)->AddTorque(rolling_moment);
++// TURN_OBSERVATION_BEGIN
++      if(turn_observation::enabled()){turn_diag_rolling_=rolling_moment;turn_diag_drag_=air_drag;}
++// TURN_OBSERVATION_END
++
+       // Apply the filter on the motor's velocity.
+       double ref_motor_rot_vel;
+       ref_motor_rot_vel = rotor_velocity_filter_->updateFilter(
+-          ref_motor_input_, sampling_time_);
++          turn_observation::tap(ref_motor_input_, turn_diag_input_), sampling_time_);
+ 
+       // Make sure max force is set, as it may be reset to 0 by a world reset any
+       // time. (This cannot be done during Reset() because the change will be undone
+@@ -480,6 +525,10 @@ void GazeboMotorModel::UpdateForcesAndMoments() {
+       joint_->SetVelocity(
+           0, turning_direction_ * ref_motor_rot_vel /
+                  rotor_velocity_slowdown_sim_);
++// TURN_OBSERVATION_BEGIN
++      if(turn_observation::enabled())turn_diag_filtered_=ref_motor_rot_vel;
++// TURN_OBSERVATION_END
++
+     }
+   }
+ }
+diff --git a/home/ljz/rotors_ws/src/rotors_simulator/rotors_gazebo_plugins/src/gazebo_ros_interface_plugin.cpp b/home/ljz/falcon_turn_observation_ws/src/rotors_gazebo_plugins/src/gazebo_ros_interface_plugin.cpp
+index 546a80f..e745d29 100644
+--- a/home/ljz/rotors_ws/src/rotors_simulator/rotors_gazebo_plugins/src/gazebo_ros_interface_plugin.cpp
++++ b/home/ljz/falcon_turn_observation_ws/src/rotors_gazebo_plugins/src/gazebo_ros_interface_plugin.cpp
+@@ -16,6 +16,10 @@
+ 
+ // MODULE
+ #include <rotors_gazebo_plugins/gazebo_ros_interface_plugin.h>
++// TURN_OBSERVATION_BEGIN
++#include "turn_observation/trace.h"
++// TURN_OBSERVATION_END
++
+ 
+ // SYSTEM
+ #include <stdio.h>
+@@ -966,6 +970,10 @@ void GazeboRosInterfacePlugin::RosActuatorsMsgCallback(
+ void GazeboRosInterfacePlugin::RosCommandMotorSpeedMsgCallback(
+     const mav_msgs::ActuatorsConstPtr& ros_actuators_msg_ptr,
+     gazebo::transport::PublisherPtr gz_publisher_ptr) {
++// TURN_OBSERVATION_BEGIN
++  const double turn_receipt_mono=turn_observation::mono(),turn_receipt_ros=ros::Time::now().toSec();
++// TURN_OBSERVATION_END
++
+   // Convert ROS message to Gazebo message
+ 
+   gz_mav_msgs::CommandMotorSpeed gz_command_motor_speed_msg;
+@@ -977,6 +985,11 @@ void GazeboRosInterfacePlugin::RosCommandMotorSpeedMsgCallback(
+ 
+   // Publish to Gazebo
+   gz_publisher_ptr->Publish(gz_command_motor_speed_msg);
++// TURN_OBSERVATION_BEGIN
++  if(turn_observation::enabled()){static turn_observation::Sink sink("interface");static std::atomic<unsigned long long> seq{0};turn_observation::Packet p;p.kind=5;p.seq=++seq;p.monotonic=turn_receipt_mono;p.wall_time=turn_observation::wall();p.sim=turn_receipt_ros;
++  p.add(ros_actuators_msg_ptr->header.stamp.toSec());p.add(ros_actuators_msg_ptr->header.seq);p.add(ros_actuators_msg_ptr->angular_velocities.size());for(auto v:ros_actuators_msg_ptr->angular_velocities)p.add(v);for(int i=0;i<gz_command_motor_speed_msg.motor_speed_size();++i)p.add(gz_command_motor_speed_msg.motor_speed(i));p.add(turn_observation::mono());sink.submit(p);}
++// TURN_OBSERVATION_END
++
+ }
+ 
+ void GazeboRosInterfacePlugin::RosRollPitchYawrateThrustMsgCallback(

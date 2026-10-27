@@ -9,7 +9,9 @@ source /opt/ros/noetic/setup.bash
 FALCON_ROTORS_WS="${FALCON_ROTORS_WS:-$(dirname "$FALCON_WORKSPACE")/rotors_ws}"
 source "$FALCON_ROTORS_WS/devel/setup.bash" --extend
 if [ -f "$FALCON_WORKSPACE/devel/setup.bash" ]; then source "$FALCON_WORKSPACE/devel/setup.bash" --extend; fi
-export GAZEBO_PLUGIN_PATH="$FALCON_WORKSPACE/devel/lib:$FALCON_ROTORS_WS/devel/lib:/opt/ros/noetic/lib"
+FALCON_OBSERVER_WS="${FALCON_OBSERVER_WS:-$(dirname "$FALCON_WORKSPACE")/falcon_turn_observation_ws}"
+source "$FALCON_OBSERVER_WS/devel/setup.bash" --extend
+export GAZEBO_PLUGIN_PATH="$FALCON_OBSERVER_WS/devel/lib:$FALCON_WORKSPACE/devel/lib:$FALCON_ROTORS_WS/devel/lib:/opt/ros/noetic/lib"
 for falcon_var in CMAKE_PREFIX_PATH ROS_PACKAGE_PATH ROSLISP_PACKAGE_DIRECTORIES PYTHONPATH LD_LIBRARY_PATH PKG_CONFIG_PATH; do
  falcon_result=""
  IFS=: read -ra falcon_parts <<< "${!falcon_var}"

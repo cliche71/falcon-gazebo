@@ -7,6 +7,9 @@
 #include "polynomial/polynomial_traj.h"
 #include "quadrotor_msgs/PositionCommand.h"
 #include "std_msgs/Int32.h"
+#include "std_msgs/String.h"
+#include <jsoncpp/json/json.h>
+#include <cstdlib>
 #include "trajectory/Bspline.h"
 #include "visualization_msgs/Marker.h"
 
@@ -21,6 +24,8 @@ using fast_planner::PolynomialTraj;
 
 ros::Publisher cmd_vis_pub, pos_cmd_pub, traj_pub, traj_vel_pub;
 quadrotor_msgs::PositionCommand cmd;
+ros::Publisher repair_state_pub;
+uint64_t repair_replan_sequence=0;
 
 // Info of generated traj
 vector<NonUniformBspline> traj_;
@@ -42,6 +47,13 @@ vector<Eigen::Vector3d> traj_cmd_, vel_cmd_;
 // Data for benchmark comparison
 ros::Time flight_start_time, flight_end_time, last_time;
 double energy;
+
+// Read-only execution-state evidence. The original truncation/command expressions are untouched.
+void publishRepairExecutionState(const char* kind,int type,const ros::Time& when,double requested) {
+  if(!std::getenv("FALCON_REPAIR_STAGE"))return;
+  Json::Value r;r["kind"]=kind;r["trajectory_id"]=traj_id_;r["start_time"]=start_time_.toSec();r["effective_duration"]=traj_duration_;r["event_ros_time"]=when.toSec();r["replan_type"]=type;r["requested_t_stop"]=requested;r["replan_sequence"]=Json::UInt64(repair_replan_sequence);r["receive_trajectory"]=receive_traj_;
+  Json::StreamWriterBuilder b;b["indentation"]="";b["precision"]=17;std_msgs::String m;m.data=Json::writeString(b,r);repair_state_pub.publish(m);
+}
 
 double calcPathLength(const vector<Eigen::Vector3d> &path) {
   if (path.empty())
@@ -252,6 +264,8 @@ void replanCallback(std_msgs::Int32 msg) {
   }
 
   traj_duration_ = min(t_stop, traj_duration_);
+  ++repair_replan_sequence;
+  publishRepairExecutionState("replan_applied",msg.data,time_now,t_stop);
 }
 
 void visCallback(const ros::TimerEvent &e) {
@@ -303,6 +317,7 @@ void bsplineCallback(const trajectory::BsplineConstPtr &msg) {
   traj_duration_ = traj_[0].getTimeSum();
 
   receive_traj_ = true;
+  publishRepairExecutionState("bspline_received",-1,ros::Time::now(),traj_duration_);
 
   // Record the start time of flight
   if (flight_start_time.isZero()) {
@@ -426,6 +441,7 @@ int main(int argc, char **argv) {
   ros::Timer vis_timer = node.createTimer(ros::Duration(0.25), visCallback);
 
   ros::NodeHandle nh("~");
+  repair_state_pub=nh.advertise<std_msgs::String>("/repair/traj_server_state",128,true);
 
   Eigen::Vector3d init_pos, init_pos_offset_body, init_pos_offset;
   double init_yaw;

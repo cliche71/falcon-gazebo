@@ -5,6 +5,7 @@
 #include "fast_planner/planner_manager.h"
 #include "tic_toc.h"
 #include "fast_planner/targeted_snapshot.h"
+#include "fast_planner/trajectory_consistency.h"
 #include "traj_utils/planning_visualization.h"
 
 using Eigen::Vector4d;
@@ -439,34 +440,9 @@ void ExplorationFSM::FSMCallback(const ros::TimerEvent &e) {
 
     FALCON_DIAG(falcon_diag::phase("pub_after_collision_before_time");diagnosticTrajectory(planner_manager_->local_data_,"pub_after_collision_before_time"));
 
-    // Check traj avg vel
-    double pos_traj_length = planner_manager_->local_data_.position_traj_.getLength();
-    double pos_traj_duration = planner_manager_->local_data_.position_traj_.getTimeSum();
-    double avg_pos_vel = pos_traj_length / pos_traj_duration;
-    double yaw_traj_length = planner_manager_->local_data_.yaw_traj_.getLength();
-    double yaw_traj_duration = planner_manager_->local_data_.yaw_traj_.getTimeSum();
-    double avg_yaw_vel = yaw_traj_length / yaw_traj_duration;
-    // ROS_WARN_COND(avg_vel < 0.1, "[FSM] Average velocity too low: %.2lf", avg_vel);
-
-    // static bool traj_lengthened = false;
-    // if (avg_pos_vel < 0.5 && avg_yaw_vel < 0.5 && !traj_lengthened) {
-    if (avg_pos_vel < 0.5 && avg_yaw_vel < 0.5) {
-      ROS_WARN("[FSM] Slow trajectory detected, duration: %.2lf, length: %.2lf", pos_traj_duration,
-               pos_traj_length);
-      // traj_lengthened = true;
-      double yaw_ratio = 1.57 / avg_yaw_vel;
-      double pos_ratio = 2.0 / avg_pos_vel;
-      double ratio = 1.0 / std::min(yaw_ratio, pos_ratio);
-      FALCON_DIAG(diagnosticTrajectory(planner_manager_->local_data_,"slow_before");auto r=falcon_diag::record("slow_parameters");r["ratio"]=ratio;r["position_average_speed"]=avg_pos_vel;r["yaw_average_speed"]=avg_yaw_vel;falcon_diag::emit(std::move(r)));
-      planner_manager_->local_data_.position_traj_.lengthenTime(ratio);
-      planner_manager_->local_data_.yaw_traj_.lengthenTime(ratio);
-      FALCON_DIAG(diagnosticTrajectory(planner_manager_->local_data_,"slow_after"));
-      ROS_WARN("[FSM] Avg position velocity: %.2lf, avg yaw velocity: %.2lf, lengthen ratio: %.2lf",
-               avg_pos_vel, avg_yaw_vel, ratio);
-
-      double init_traj_duration = planner_manager_->local_data_.init_traj_bspline_.getTimeSum();
-      ROS_WARN("[FSM] Initial traj duration: %.2lf", init_traj_duration);
-    }
+    // Stage A: retain the generated/fallback curves; no additional Slow time compression.
+    refreshTrajectoryDerived(planner_manager_->local_data_);
+    FALCON_DIAG(diagnosticTrajectory(planner_manager_->local_data_,"pub_final_refreshed"));
 
     trajectory::Bspline bspline;
     auto info = &planner_manager_->local_data_;

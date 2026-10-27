@@ -1,4 +1,4 @@
-# FALCON Gazebo本地主线：v0.1.0-gazebo-aligned
+# FALCON Gazebo本地主线：v0.2.0-time-consistent
 
 主用工作区固定为`/home/ljz/falcon_gazebo_repair_ws`。这是已批准Gazebo接入与真实历史快照的重建导入，不是纯官方源码。规划源码作为普通文件跟踪在src/FALCON，原Git历史单独集中归档。
 
