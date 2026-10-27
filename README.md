@@ -1,4 +1,4 @@
-# FALCON Gazebo本地主线：v0.2.0-time-consistent
+# FALCON Gazebo本地主线：v0.3.0-clearance
 
 主用工作区固定为`/home/ljz/falcon_gazebo_repair_ws`。这是已批准Gazebo接入与真实历史快照的重建导入，不是纯官方源码。规划源码作为普通文件跟踪在src/FALCON，原Git历史单独集中归档。
 
@@ -9,7 +9,7 @@ cd /home/ljz/falcon_gazebo_repair_ws
 bash tools/start_office.sh gui:=true
 ```
 
-默认配置：**original_a (0.5 / 0.7)**，显式official_compatible深度，启动后Gazebo原样暂停；没有自动prepare、start或探索倒计时。需要原A避障配置可使用`bash tools/start_office.sh profile:=original_a gui:=true`。不要使用历史reports中的旧启动脚本。
+默认配置：**author_clearance (1.5 / 1.0)**，显式official_compatible深度，启动后Gazebo原样暂停；没有自动prepare、start或探索倒计时。需要原A避障配置可使用`bash tools/start_office.sh profile:=original_a gui:=true`。不要使用历史reports中的旧启动脚本。
 
 新终端按原流程手动准备/开始/停止，使用与launch相同的ROS_MASTER_URI：
 

@@ -11,7 +11,7 @@
     <arg name="depth_mode" value="$(arg depth_mode)"/>
     <arg name="log_dir" value="$(arg log_dir)"/>
   </include>
-  <arg name="profile" default="original_a"/>
+  <arg name="profile" default="author_clearance"/>
   <rosparam command="load" file="$(find falcon_native)/../../config/profiles/$(arg profile).yaml"/>
   <node pkg="falcon_native" type="command_bridge.py" name="native_command" output="screen"/>
 </launch>
